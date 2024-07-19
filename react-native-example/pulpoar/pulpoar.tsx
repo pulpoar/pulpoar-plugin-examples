@@ -46,9 +46,7 @@ export function PulpoAR({plugin, slug, actionsRef, ...rest}: PulpoARProps) {
       <WebView
         ref={pluginRef}
         originWhitelist={['*']}
-        allowsAirPlayForMediaPlayback={true}
-        allowsProtectedMedia={true}
-        mediaPlaybackRequiresUserAction={false}
+        allowsInlineMediaPlayback
         source={{
           uri: `https://plugin.pulpoar.com/${plugin}/${slug}`,
         }}
@@ -63,7 +61,6 @@ export function PulpoAR({plugin, slug, actionsRef, ...rest}: PulpoARProps) {
         }}
         containerStyle={styles.containerStyle}
         onLoadEnd={() => setIframeLoaded(true)}
-        allowsInlineMediaPlayback
       />
     </View>
   );
