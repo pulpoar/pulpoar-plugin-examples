@@ -50,7 +50,7 @@ export function PulpoAR({plugin, slug, actionsRef, ...rest}: PulpoARProps) {
         allowsProtectedMedia={true}
         mediaPlaybackRequiresUserAction={false}
         source={{
-          uri: `https://plugin.pulpoar.com/${plugin}/${slug}` || '',
+          uri: `https://plugin.pulpoar.com/${plugin}/${slug}`,
         }}
         injectedJavaScript={getInitialSdkScript(events)}
         onMessage={payload => {
