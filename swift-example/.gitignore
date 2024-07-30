@@ -1,0 +1,15 @@
+# Xcode specifics
+.DS_Store
+*.swp
+*.lock
+*.xcuserstate
+*.xcuserdata
+*.xcscmblueprint
+DerivedData/
+*.moved-aside
+*.xccheckout
+*.playground*
+
+# Dependency managers
+Carthage/Build/
+# Pods/  # Uncomment based on preference
