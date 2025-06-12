@@ -158,230 +158,217 @@ This document explains how the navigation system works in this Android applicati
 
 ## Overview
 
-The app uses a **custom fragment-based navigation system** with **state preservation** for the WebView. Instead of relying on Android's default navigation components, we implemented a hybrid approach that combines fragment transactions with a custom navigation stack.
+The app uses **standard Android fragment navigation** with **slide animations** and **proper backstack management**, while preserving WebView state. This approach mimics partner integrations that provide native Android navigation feel with AR session persistence.
 
-## Navigation Components
+## Navigation Strategy
 
-### 1. Screens/Views
+### **Standard Android Navigation + State Preservation**
 
-The app has 3 main screen types:
+- **Visual Experience**: Full Android navigation animations (slide in/out transitions)
+- **Backstack Management**: Uses Android's fragment backstack for proper navigation history
+- **WebView Persistence**: Preserves AR session state by reusing fragment instances
+- **Partner Integration Feel**: Matches the look and behavior of production partner apps
+
+### Navigation Screens
 
 - **Welcome Screen** (`WelcomeFragment`) - Entry point with "Try On" button
 - **Product Detail Screen** (`ProductDetailFragment`) - Shows mock product info with "Try On" button
-- **WebView Screen** (`PulpoARFragment`) - AR try-on experience
+- **WebView Screen** (`PulpoARFragment`) - AR try-on experience (state preserved)
 
-### 2. Fragment Management Strategy
+## Navigation Flow & Animations
 
-#### **WebView Fragment (Special Treatment)**
+### **Flow 1: Welcome → WebView**
 
-- **Created Once**: The WebView fragment is created only once and kept in memory
-- **Never Destroyed**: Uses `hide()`/`show()` operations instead of `add()`/`remove()`
-- **State Preserved**: Maintains AR session, camera permissions, user progress
-- **Tagged**: Stored with tag `"webview_fragment"` for easy retrieval
+```
+User Action: Welcome screen → "Try On" button
+Animation: Slide in from left (standard Android animation)
+Backstack: [Welcome] → [Welcome, WebView]
+WebView State: Created fresh (first time)
+```
+
+### **Flow 2: WebView → Product Detail**
+
+```
+User Action: WebView → onGoToProduct event triggered
+Animation: Slide in from left (new screen push)
+Backstack: [Welcome, WebView] → [Welcome, WebView, Product]
+WebView State: Preserved in background
+```
+
+### **Flow 3: Product Detail → WebView (Key Feature)**
+
+```
+User Action: Product Detail → "Try On" button
+Behavior: Pop Product Detail (no recreation of WebView)
+Animation: Slide out to right (pop) + Slide in from left (WebView)
+Backstack: [Welcome, WebView, Product] → [Welcome, WebView]
+WebView State: ✅ PRESERVED - User returns to exact same AR session
+```
+
+### **Flow 4: Back Navigation**
+
+```
+User Action: Back button
+Behavior: Standard Android back navigation
+Animation: Slide out to right (pop animation)
+Backstack: Removes top fragment from stack
+```
+
+## Technical Implementation
+
+### **Fragment Transaction Strategy**
+
+#### **All Screens Use Standard Navigation**
 
 ```kotlin
-// WebView is added once and reused
+fragmentManager.beginTransaction()
+    .setCustomAnimations(
+        android.R.anim.slide_in_left,   // Enter animation
+        android.R.anim.slide_out_right, // Exit animation
+        android.R.anim.slide_in_left,   // Pop enter animation
+        android.R.anim.slide_out_right  // Pop exit animation
+    )
+    .setReorderingAllowed(true)
+    .replace(R.id.fragment_container, fragment, tag)
+    .addToBackStack(backStackName)
+    .commit()
+```
+
+#### **WebView State Preservation**
+
+The WebView fragment instance is created only once and always reused:
+
+```kotlin
+// Create once, reuse many times
 if (pulpoARFragment == null) {
-    pulpoARFragment = PulpoARFragment()
-    fragmentManager.beginTransaction()
-        .add(R.id.fragment_container, pulpoARFragment!!, WEBVIEW_FRAGMENT_TAG)
-        .commit()
+    pulpoARFragment = PulpoARFragment()  // Create once
+    pulpoARFragment?.setNavigationListener(this)
 } else {
-    // Reuse existing fragment (preserves state)
-    showFragment(pulpoARFragment!!)
+    // Reuse existing instance - preserves state
+}
+
+// Always use the same instance in transactions
+.replace(R.id.fragment_container, pulpoARFragment!!, "webview_fragment")
+```
+
+### **Navigation Methods**
+
+#### **Push Product Detail**
+
+```kotlin
+override fun navigateToProduct(productId: Int) {
+    val productFragment = ProductDetailFragment.newInstance(productId)
+    productFragment.setProductDetailListener(this)
+    fragmentManager.beginTransaction()
+        .setCustomAnimations(
+            android.R.anim.slide_in_left,
+            android.R.anim.slide_out_right,
+            android.R.anim.slide_in_left,
+            android.R.anim.slide_out_right
+        )
+        .setReorderingAllowed(true)
+        .replace(R.id.fragment_container, productFragment, "product_detail_fragment")
+        .addToBackStack("product_detail_$productId")
+        .commit()
 }
 ```
 
-#### **Other Fragments (Standard Treatment)**
-
-- **Created Fresh**: Welcome and Product Detail fragments are recreated as needed
-- **Replaced**: Uses `add()`/`remove()` operations
-- **No State Preservation**: These are simple UI screens that don't need state preservation
-
-## Navigation Flow
-
-### How Navigation Works
-
-```
-Welcome Screen → WebView → Product Detail → WebView → Product Detail → ...
-     ↑              ↑           ↑              ↑            ↑
-   Fresh         Created      Fresh         Reused       Fresh
-  Fragment       Once        Fragment      (State        Fragment
-                                          Preserved)
-```
-
-### Custom Navigation Stack
-
-Instead of Android's fragment backstack, we maintain our own navigation history:
+#### **Return to WebView (Pop Only, Never Recreate)**
 
 ```kotlin
-private val navigationStack = mutableListOf<String>()
-
-// Examples:
-["welcome"] → ["welcome", "webview"] → ["welcome", "webview", "product_1"]
-```
-
-### Navigation Actions
-
-#### **Forward Navigation**
-
-```kotlin
-// Adds to navigation stack
-showWelcomeScreen() → navigationStack.add("welcome")
-showWebView() → navigationStack.add("webview")
-showProductDetail(1) → navigationStack.add("product_1")
-```
-
-#### **Back Navigation**
-
-```kotlin
-// Removes from stack and navigates to previous
-handleBackNavigation() {
-    navigationStack.removeLastOrNull()
-    val previous = navigationStack.lastOrNull()
-    // Navigate to previous screen without adding to stack
-}
-```
-
-## Fragment Transaction Types
-
-### 1. **Replace Operations** (Welcome ↔ Product Detail)
-
-```kotlin
-private fun replaceFragment(fragment: Fragment, tag: String) {
-    // 1. Hide WebView (but keep it in memory)
-    webViewFragment?.let { transaction.hide(it) }
-
-    // 2. Remove any existing non-WebView fragments
-    existingFragments.forEach { transaction.remove(it) }
-
-    // 3. Add new fragment
-    transaction.add(R.id.fragment_container, fragment, tag)
-}
-```
-
-### 2. **Show/Hide Operations** (Anything ↔ WebView)
-
-```kotlin
-private fun showFragment(fragment: Fragment) {
-    // 1. Hide current fragment
-    currentFragment?.let { transaction.hide(it) }
-
-    // 2. Show target fragment (WebView)
-    transaction.show(fragment)
-}
-```
-
-## State Management
-
-### WebView State Preservation
-
-The WebView maintains its state across navigation because:
-
-1. **Fragment Persistence**: Never removed from fragment manager
-2. **View Lifecycle**: Properly handles `onPause()`/`onResume()`
-3. **Visibility Management**: Uses `onHiddenChanged()` to manage WebView lifecycle
-4. **URL Preservation**: WebView URL is not reloaded when showing the fragment
-
-### Navigation Listener Preservation
-
-```kotlin
-// Navigation listener is re-set when WebView is shown
-override fun onHiddenChanged(hidden: Boolean) {
-    if (!hidden) {
-        // Re-ensure navigation listener when fragment becomes visible
-        pendingNavigationListener?.let { listener ->
-            sdk.setNavigationListener(listener)
-        }
+override fun onProductTryOnClicked() {
+    // Only pop the backstack to reveal the existing WebView
+    if (fragmentManager.backStackEntryCount > 0) {
+        fragmentManager.popBackStack()
+    } else {
+        // This should never happen; WebView should always be underneath
+        Log.e("MainActivity", "No backstack entries found! Navigation error.")
     }
 }
 ```
 
+> **Note:** The WebView is never recreated after the first launch. Returning from Product Detail always pops the backstack, revealing the preserved AR session.
+
 ## Navigation Examples
 
-### Example 1: Basic Flow
+### **Example 1: Complete User Journey**
 
 ```
-User Action: Welcome → "Try On" button
-Navigation: showWebView()
-Result: WebView created and shown
-Stack: ["welcome", "webview"]
+Start: Welcome Screen
+↓ [Try On] - slides in →
+WebView (AR session starts)
+↓ [onGoToProduct] - slides in →
+Product Detail (WebView hidden but preserved)
+↓ [Try On] - pops out, slides in →
+WebView (SAME AR session continues) ✅
 ```
 
-### Example 2: Product Navigation
+### **Example 2: Complex Navigation**
 
 ```
-User Action: WebView → onGoToProduct event triggered
-Navigation: navigateToProduct(randomId) → showProductDetail()
-Result: New ProductDetailFragment created and shown, WebView hidden
-Stack: ["welcome", "webview", "product_2"]
-```
+Welcome → WebView → Product A → WebView → Product B → Back → Back → Welcome
 
-### Example 3: Return to WebView
-
-```
-User Action: Product Detail → "Try On" button
-Navigation: showWebView() → showFragment(existingWebViewFragment)
-Result: Existing WebView shown (state preserved), Product Detail removed
-Stack: ["welcome", "webview", "product_2", "webview"]
-```
-
-### Example 4: Back Navigation
-
-```
-User Action: Back button pressed
-Navigation: handleBackNavigation()
-Process:
-  1. Remove "webview" from stack → ["welcome", "webview", "product_2"]
-  2. Navigate to "product_2" without adding to stack
-Result: Product Detail shown, WebView hidden
-Stack: ["welcome", "webview", "product_2"]
+Backstack progression:
+[Welcome]
+[Welcome, WebView]
+[Welcome, WebView, Product A]
+[Welcome, WebView]              // WebView state preserved
+[Welcome, WebView, Product B]
+[Welcome, WebView]              // Back pressed
+[Welcome]                       // Back pressed
+[]                              // Back pressed (app exits)
 ```
 
 ## Key Benefits
 
+### ✅ **Native Android Feel**
+
+- Standard slide animations match system behavior
+- Proper backstack management
+- Familiar navigation patterns for users
+
 ### ✅ **WebView State Preservation**
 
-- User's AR session progress is maintained
-- Camera permissions persist
-- No reload delays when returning to WebView
+- AR session continues seamlessly
+- Camera permissions maintained
+- User progress never lost
 
-### ✅ **Memory Efficiency**
+### ✅ **Partner Integration Compatible**
 
-- Only one WebView instance exists
-- Other fragments are lightweight and recreated as needed
+- Matches behavior of production partner apps
+- Professional UX with smooth transitions
+- No unexpected behaviors or glitches
 
-### ✅ **Predictable Navigation**
+### ✅ **Performance Optimized**
 
-- Custom navigation stack provides exact control
-- No conflicts with Android's fragment backstack
-
-### ✅ **Smooth User Experience**
-
+- WebView instance reused (no recreation overhead)
 - Fast transitions between screens
-- No unexpected black screens
-- Proper back button behavior
+- Memory efficient fragment management
 
-## Technical Notes
+## Animation Details
 
-### Fragment Lifecycle Management
+### **Built-in Android Animations Used:**
 
-```kotlin
-// WebView Fragment Lifecycle
-onCreate() → onCreateView() → onViewCreated() → onResume()
-      ↓ (when hidden)
-onPause() → onHiddenChanged(hidden=true)
-      ↓ (when shown again)
-onHiddenChanged(hidden=false) → onResume()
-```
+- `android.R.anim.slide_in_left` - New screen enters from left
+- `android.R.anim.slide_out_right` - Current screen exits to right
+- `android.R.anim.slide_in_left` - Previous screen returns from right (pop enter)
+- `android.R.anim.slide_out_right` - Current screen exits to right (pop exit)
 
-### Why Not Use Navigation Component?
+### **Animation Behavior:**
 
-We chose a custom solution because:
+- **Forward Navigation**: Slides in from left (push feel)
+- **Back Navigation**: Slides out to right (pop feel)
+- **System Consistent**: Matches Android's standard navigation animations
 
-1. **WebView State**: Navigation Component destroys fragments, losing WebView state
-2. **Complex Requirements**: Need to mix persistent (WebView) and temporary (Product) fragments
-3. **Event Integration**: AR WebView events need to trigger native navigation
-4. **Performance**: Avoiding WebView recreation provides better UX
+## Troubleshooting
 
-This architecture provides a robust foundation for AR-enabled e-commerce apps where maintaining WebView state is critical for user experience.
+- **WebView is recreated or AR session is lost:**
+  - Ensure you never call `showWebView()` when returning from Product Detail. Only pop the backstack.
+  - The WebView fragment should be created once and reused for all navigation.
+- **Back navigation does not work as expected:**
+  - Check that all navigation to Product Detail uses `.addToBackStack()`.
+  - Ensure you are not clearing the backstack or replacing the WebView fragment unnecessarily.
+- **Black screen or empty view after navigation:**
+  - This usually means the fragment stack is not managed correctly. Review the navigation flow and make sure the WebView is always present underneath Product Detail.
+
+This architecture provides the exact navigation experience found in professional AR e-commerce applications, combining native Android navigation patterns with the technical requirements of AR session persistence.
