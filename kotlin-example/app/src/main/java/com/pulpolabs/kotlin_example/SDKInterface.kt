@@ -245,13 +245,22 @@ public class SDKInterface {
 
     fun getInitialSDKScript(events: List<Events>): String {
         var script: String = """
+            if (!window.pulpoarScriptInjected) {
                 const script = document.createElement('script');
                 script.src = 'https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js';
                 script.onload = function() {
-                  ${makeSdkEvent(events)}
-                }
+                    console.log("PulpoAR SDK loaded successfully");
+                    ${makeSdkEvent(events)}
+                    window.pulpoarScriptInjected = true;
+                };
+                script.onerror = function() {
+                    console.error("Failed to load PulpoAR SDK");
+                };
                 document.body.appendChild(script);
-            
+            } else {
+                console.log("----------PulpoAR SDK already loaded");
+                ${makeSdkEvent(events)}
+            }
         """.trimIndent()
         return script
     }
