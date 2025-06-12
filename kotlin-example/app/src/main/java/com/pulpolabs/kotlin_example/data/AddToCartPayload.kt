@@ -17,16 +17,16 @@ data class AddToCartPayload(
     val webLink: String?
 ) {
     constructor(obj: JSONObject) : this(
-        barcode = obj.getString("path"),
-        id = obj.getString("referer"),
+        barcode = obj.optString("barcode"),
+        id = obj.getString("id"),
         config = Config(obj.getJSONObject("config")),
-        image = obj.getString("image"),
+        image = obj.optString("image"),
         name = obj.getString("name"),
         product = Product(obj.getJSONObject("product")),
-        slug = obj.getString("slug"),
-        thumbnailColor = obj.getString("thumbnail_color"),
-        thumbnailImage = obj.getString("thumbnail_image"),
-        webLink = obj.getString("web_link"),
+        slug = obj.optString("slug"),
+        thumbnailColor = obj.optString("thumbnail_color"),
+        thumbnailImage = obj.optString("thumbnail_image"),
+        webLink = obj.optString("web_link"),
         translations = Utils.getArrObj<Translation>(obj.getJSONArray("translations")) { json ->
             Translation(json)
         })

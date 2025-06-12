@@ -18,9 +18,23 @@ import com.pulpolabs.kotlin_example.data.OpacitySlidePayload
 import com.pulpolabs.kotlin_example.data.Variant
 import com.pulpolabs.kotlin_example.data.ZoomPayload
 import org.json.JSONObject
+import org.json.JSONArray
 import java.util.stream.Collectors
+import kotlin.random.Random
 
 public class SDKInterface {
+
+    interface NavigationListener {
+        fun navigateToProduct(productId: Int)
+    }
+
+    private var navigationListener: NavigationListener? = null
+
+    fun setNavigationListener(listener: NavigationListener) {
+        Log.d("SDKInterface", "setNavigationListener called")
+        this.navigationListener = listener
+        Log.d("SDKInterface", "navigationListener set to: ${if (listener != null) "not null" else "null"}")
+    }
 
     @JavascriptInterface
     fun onReady(payload: String) {
@@ -32,10 +46,21 @@ public class SDKInterface {
 
     @JavascriptInterface
     fun onAddToCart(payload: String) {
-        val jsonObject = JSONObject(payload)
-        val cart = AddToCartPayload(jsonObject)
-
-        Log.d("PulpoAR", "Add to Cart clicked: $cart")
+        try {
+            val jsonArray = JSONArray(payload)
+            val cartItems = mutableListOf<AddToCartPayload>()
+            
+            for (i in 0 until jsonArray.length()) {
+                val jsonObject = jsonArray.getJSONObject(i)
+                val cartItem = AddToCartPayload(jsonObject)
+                cartItems.add(cartItem)
+            }
+            
+            Log.d("PulpoAR", "Add to Cart clicked with ${cartItems.size} items: $cartItems")
+        } catch (e: Exception) {
+            Log.e("PulpoAR", "Error parsing add to cart payload: ${e.message}")
+            Log.d("PulpoAR", "Raw payload: $payload")
+        }
     }
 
     @JavascriptInterface
@@ -103,6 +128,18 @@ public class SDKInterface {
     @JavascriptInterface
     fun onGoToProduct(payload: String) {
         Log.d("PulpoAR", "on Go To Product: $payload")
+        
+        // Randomly select one of the 3 mock products
+        val randomProductId = Random.nextInt(1, 4) // 1, 2, or 3
+        
+        Log.d("PulpoAR", "Attempting to navigate to product ID: $randomProductId")
+        
+        if (navigationListener != null) {
+            Log.d("PulpoAR", "navigationListener is not null, calling navigateToProduct")
+            navigationListener?.navigateToProduct(randomProductId)
+        } else {
+            Log.e("PulpoAR", "navigationListener is NULL! Cannot navigate to product")
+        }
     }
 
     @JavascriptInterface
