@@ -94,6 +94,7 @@ class PulpoARFragment : Fragment() {
                 webView.evaluateJavascript(
                     sdk.getInitialSDKScript(
                         listOf(
+                            Events.onError,
                             Events.onReady,
                             Events.onAddToCart,
                             Events.onPathChange,

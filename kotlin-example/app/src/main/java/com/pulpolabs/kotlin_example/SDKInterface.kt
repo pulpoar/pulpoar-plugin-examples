@@ -198,7 +198,11 @@ public class SDKInterface {
 
     @JavascriptInterface
     fun onError(payload: String) {
-        Log.d("PulpoAR", "Error: $payload")
+        if (payload.contains("ANDROID_CAMERA_PERMISSION_CHECK_TIMEOUT")) {
+            Log.d("PulpoAR", "Android camera permission check timeout error occurred. Please reload the webview.")
+        } else {
+            Log.d("PulpoAR", "Error: $payload")
+        }
     }
 
     @JavascriptInterface
