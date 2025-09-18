@@ -37,4 +37,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        // Forward permission results to the fragment
+        pulpoARFragment.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
 }

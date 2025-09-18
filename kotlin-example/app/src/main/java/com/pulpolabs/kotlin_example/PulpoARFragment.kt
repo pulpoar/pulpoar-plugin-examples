@@ -1,5 +1,6 @@
 package com.pulpolabs.kotlin_example
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -29,9 +30,10 @@ class PulpoARFragment : Fragment() {
     private var uploadMessage: ValueCallback<Array<Uri>>? = null
     private lateinit var webView: WebView
     private lateinit var actions: Actions
-    private var CAMERA_PERMISSION_CODE = 200
     private val FILE_CHOOSER_RESULT_CODE = 1
+    private val CAMERA_PERMISSION_REQUEST_CODE = 2
     private lateinit var sdk: SDKInterface
+    private var pendingPermissionRequest: PermissionRequest? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +45,6 @@ class PulpoARFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        requestCameraPermission()
         val view = inflater.inflate(R.layout.fragment_web_view, container, false)
         webView = view.findViewById(R.id.webView)
         initializeWebView()
@@ -63,7 +64,29 @@ class PulpoARFragment : Fragment() {
 
         webView.webChromeClient = object : WebChromeClient() {
             override fun onPermissionRequest(request: PermissionRequest) {
-                request.grant(request.resources)
+                Log.d("PulpoAR", "Permission requested: ${request.resources.joinToString()}")
+
+                val permissions = request.resources
+                val cameraPermissionNeeded = permissions.contains(PermissionRequest.RESOURCE_VIDEO_CAPTURE)
+
+                if (cameraPermissionNeeded) {
+                    if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA)
+                        == PackageManager.PERMISSION_GRANTED) {
+                        Log.d("PulpoAR", "Camera permission already granted, granting WebView request")
+                        request.grant(request.resources)
+                    } else {
+                        Log.d("PulpoAR", "Requesting camera permission from user")
+                        pendingPermissionRequest = request
+                        ActivityCompat.requestPermissions(
+                            requireActivity(),
+                            arrayOf(Manifest.permission.CAMERA),
+                            CAMERA_PERMISSION_REQUEST_CODE
+                        )
+                    }
+                } else {
+                    Log.d("PulpoAR", "Non-camera permission, granting directly")
+                    request.grant(request.resources)
+                }
             }
 
             override fun onShowFileChooser(
@@ -119,6 +142,27 @@ class PulpoARFragment : Fragment() {
         actions.setPath(path)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            pendingPermissionRequest?.let { request ->
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Log.d("PulpoAR", "Camera permission granted by user, granting WebView request")
+                    request.grant(request.resources)
+                } else {
+                    Log.d("PulpoAR", "Camera permission denied by user, denying WebView request")
+                    request.deny()
+                }
+            }
+            pendingPermissionRequest = null
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == FILE_CHOOSER_RESULT_CODE && resultCode == Activity.RESULT_OK) {
@@ -131,30 +175,4 @@ class PulpoARFragment : Fragment() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                // Permission granted, access the camera
-            }
-        }
-    }
-
-    private fun requestCameraPermission() {
-        if (ContextCompat.checkSelfPermission(requireContext(), android.Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    android.Manifest.permission.CAMERA,
-                    android.Manifest.permission_group.CAMERA
-                ),
-                CAMERA_PERMISSION_CODE
-            )
-        }
-    }
 }
