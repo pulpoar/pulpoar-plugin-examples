@@ -13,9 +13,31 @@ Make sure you have these permissions in your AndroidManifest.xml.
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 <uses-permission android:name="android.permission.CAMERA" />
-``` 
+```
 
-### 2. Define PulpoAR Fragment in Android
+### 2. Configure Runtime Camera Permissions
+
+The app handles runtime camera permissions automatically. When the WebView requests camera access via `navigator.mediaDevices.getUserMedia()`, the app will:
+
+1. Check if camera permission is already granted
+2. If not granted, show the Android permission dialog to the user
+3. Grant or deny the WebView request based on the user's choice
+
+**Important**: Make sure your MainActivity forwards permission results to the fragment:
+
+```kotlin
+override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<out String>,
+    grantResults: IntArray
+) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    // Forward permission results to the fragment
+    pulpoARFragment.onRequestPermissionsResult(requestCode, permissions, grantResults)
+}
+```
+
+### 3. Define PulpoAR Fragment in Android
 
 
 The PulpoAR Fragment integrates PulpoAR functionality within a WebView. It handles events and provides methods for interacting with the PulpoAR SDK.
@@ -27,7 +49,6 @@ Create the fragment's view and initialize the WebView. Inject the WebView object
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        requestCameraPermission()
         val view = inflater.inflate(R.layout.fragment_web_view, container, false)
         webView = view.findViewById(R.id.webView)
         initializeWebView()
