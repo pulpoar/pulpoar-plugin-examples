@@ -1,12 +1,14 @@
 # PulpoAR Plugin SDK - HTML/JS Example
 
-HTML/JavaScript integration example demonstrating PulpoAR VTO plugin with event monitoring and SDK actions.
+HTML/JavaScript integration example demonstrating two implementation patterns for PulpoAR VTO plugin: a landing page with event monitoring and SDK actions, and a product detail page (PDP) with virtual try-on overlay.
 
 ## Features
 
-- Event logging (27 SDK events)
-- SDK action controls (stock management, navigation, catalog)
-- Hot module replacement with Vite
+- **Two page implementations**: Landing Page  and PDP
+- **Event logging**: Real-time monitoring of 27+ SDK events
+- **SDK action controls**: Stock management, navigation, catalog controls
+- **Clean, declarative code**: Organized with constants, state management, and single-responsibility functions
+- **Hot module replacement**: Powered by Vite for instant updates
 
 ## Quick Start
 
@@ -15,25 +17,75 @@ npm install
 npm run dev
 ```
 
-Vite will start at `http://localhost:3000` and automatically open your browser.
+Vite will start at `http://localhost:3000` and automatically open the Landing Page.
+
+**Available Pages:**
+- Landing Page: `http://localhost:3000/landing-page.html`
+- PDP: `http://localhost:3000/pdp.html`
 
 ## Project Structure
 
 ```
 html-js-example/
-├── index.html          # Main page with iframe
-├── index.js            # Event handlers & SDK integration
-├── styles.css          # Responsive styling
-├── vite.config.js      # Vite configuration
-├── package.json        # Dependencies
-└── README.md           # This file
+├── landing-page.html   # Landing page
+├── landing-page.js     # Landing page event handlers & SDK integration
+├── pdp.html           # Product detail page with try-on overlay
+├── pdp.js             # PDP SDK integration
+├── common.css         # Shared base styles and navigation
+├── landing-page.css   # Landing page-specific styles
+├── pdp.css            # PDP page-specific styles
+├── vite.config.js     # Multi-page Vite configuration
+├── package.json       # Dependencies
+└── README.md          # This file
 ```
 
-## SDK Integration
+## Page Implementations
+
+### Landing Page
+
+Full SDK experience for testing all features, events, and SDK actions.
+
+**Access**: `http://localhost:3000/landing-page.html`
+
+**Features**:
+- Event log panel displaying SDK events
+- SDK Actions panel with stock management, navigation control, and catalog operations
+
+**SDK Usage**:
+- **Events**: Subscribes to all events (onReady, onVariantSelect, onAddToCart, etc.) and logs them to the panel
+- **Actions**: Provides UI controls for `setVariantsStatus`, `setPath`, and `applyVariantsWithCatalog`
+
+**Logic**: When the SDK fires an event, it's captured and displayed in the events panel. Users can test SDK actions through form controls that call the corresponding SDK methods.
+
+---
+
+### PDP (Product Detail Page)
+
+E-commerce product page with virtual try-on overlay.
+
+**Access**: `http://localhost:3000/pdp.html`
+
+**Features**:
+- Product layout with lipstick color swatches
+- "Try On Virtually" button that toggles the makeup experience overlay
+
+**SDK Usage**:
+- **Events**: `onReady` (tracks SDK initialization), `onError` (handles errors)
+- **Actions**: `setImageToApply` (sets model image), `applyVariants` (applies selected color), `setPath` (navigates to apply-photo view)
+
+**Logic**:
+1. Button enables when SDK is ready and a color is selected
+2. Clicking "Try On Virtually" calls `setImageToApply()` with a model face image, `applyVariants()` with selected color, and `setPath('apply-photo')` to display the result
+3. Clicking color swatches while try-on is active calls `applyVariants()` to instantly switch lipstick colors
+4. Iframe overlay fades in/out using opacity transitions (not display:none, so SDK stays loaded)
+
+---
+
+## SDK Integration Reference
 
 ### Events (27 total)
 
-All events are logged in real-time to the events panel.
+All events are logged on the Landing Page events panel.
 
 **Core**
 - `onReady` - Plugin initialized and ready
@@ -151,24 +203,6 @@ pulpoar.setCameraFeedStatus('enabled');
 pulpoar.setCameraFeedStatus('disabled');
 ```
 
-**`updateCatalogWithCustomValues(params)`**
-
-Update catalog variants with custom values. Only variants in array will be available, all others marked as out of stock. Only works when catalog is initialized.
-
-```javascript
-pulpoar.updateCatalogWithCustomValues({
-  variants: [
-    {
-      slug: 'variant-123',
-      price: '$29.99',
-      name: 'Custom Name',
-      image: 'https://example.com/image.jpg'
-    }
-  ],
-  outOfStockText: 'Sold out'
-});
-```
-
 **`setVariantsStatus(params)`**
 
 Set the status (enabled/disabled) of specified variants with optional custom values. Only specified variants are affected, leaving all others unchanged. Only works when catalog is initialized.
@@ -203,4 +237,3 @@ pulpoar.setVariantsStatus({
   isDisabled: false
 });
 ```
-

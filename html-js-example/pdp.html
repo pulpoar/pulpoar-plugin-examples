@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulpo AR VTO - Product Detail Page</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="pdp.css">
+  <script src="https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js"></script>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <nav class="main-nav">
+    <div class="nav-content">
+      <h1 class="nav-title">Pulpo AR VTO Demo</h1>
+      <div class="nav-links">
+        <a href="/landing-page.html" class="nav-link">Landing Page</a>
+        <a href="/pdp.html" class="nav-link">PDP</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- PDP Page Content -->
+  <div class="page active">
+    <div class="container-pdp">
+      <div class="product-detail">
+        <div class="product-image">
+          <img src="https://api.pulpoar.com/assets/f8721d26-0af9-497e-9074-51f858424e4f" alt="Product Image" id="product-image">
+          <div id="sdk-container-pdp">
+            <iframe
+              id="pulpo-sdk-iframe-pdp"
+              src="https://plugin.pulpoar.com/vto/makeup-demo-1?catalog=false"
+              allow="camera *"
+              title="Pulpo AR Virtual Try-On"
+            ></iframe>
+          </div>
+        </div>
+        <div class="product-info">
+          <h1 class="product-title">Classic Red Lipstick</h1>
+          <p class="product-price">$24.99</p>
+          <p class="product-description">
+            A timeless red lipstick that provides rich, vibrant color with a smooth, comfortable feel.
+            Long-lasting formula that won't dry out your lips.
+          </p>
+          <div class="color-selection">
+            <h3 class="selection-label">Select Color:</h3>
+            <div class="color-swatches">
+              <div class="color-swatch" style="background: #8B7355;" data-variant="productid-1063577-variantid-3221476-quantity-1" title="Trench Leather 86"></div>
+              <div class="color-swatch" style="background: #D4AF37;" data-variant="productid-908628-variantid-2762742-quantity-1" title="Signature Gold 188"></div>
+              <div class="color-swatch" style="background: #8B4789;" data-variant="productid-908616-variantid-2762730-quantity-1" title="Deep English Rose 16"></div>
+              <div class="color-swatch" style="background: #C8AD7F;" data-variant="productid-908575-variantid-2762655-quantity-1" title="Beige Trench 01"></div>
+              <div class="color-swatch" style="background: #FFB6C1;" data-variant="productid-908570-variantid-2762650-quantity-1" title="First Blush 28"></div>
+              <div class="color-swatch" style="background: #E6B8C3;" data-variant="productid-908572-variantid-2762652-quantity-1" title="Delicate Rose 14"></div>
+              <div class="color-swatch" style="background: #6B4423;" data-variant="productid-908568-variantid-2762644-quantity-1" title="Monogram Brown 08"></div>
+              <div class="color-swatch" style="background: #D2B48C;" data-variant="productid-908574-variantid-2762654-quantity-1" title="Horseferry Beige 05"></div>
+              <div class="color-swatch" style="background: #C84186;" data-variant="productid-908640-variantid-2762754-quantity-1" title="Rebellious Rose 44"></div>
+              <div class="color-swatch" style="background: #704214;" data-variant="productid-908643-variantid-2762757-quantity-1" title="Sepia 35"></div>
+              <div class="color-swatch" style="background: #A0522D;" data-variant="productid-908621-variantid-2762735-quantity-1" title="Earthy Rosewood 83"></div>
+              <div class="color-swatch" style="background: #A52A2A;" data-variant="productid-908592-variantid-2762696-quantity-1" title="Burnished Red 117"></div>
+            </div>
+          </div>
+          <button id="try-on-button" class="try-on-button" disabled>Try On Virtually</button>
+        </div>
+      </div>
+      <div id="status-message-pdp" class="status-message-pdp"></div>
+    </div> 
+  </div>
+
+  <script type="module" src="pdp.js"></script>
+</body>
+</html>

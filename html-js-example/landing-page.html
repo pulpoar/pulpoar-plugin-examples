@@ -3,15 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pulpo AR VTO - HTML/JS Integration Example</title>
-  <link rel="stylesheet" href="styles.css">
+  <title>Pulpo AR VTO - Landing Page</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="landing-page.css">
   <script src="https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js"></script>
-
 </head>
 <body>
-  <div class="container">
-    <!-- Main Content Grid -->
-    <div class="content">
+  <!-- Navigation Header -->
+  <nav class="main-nav">
+    <div class="nav-content">
+      <h1 class="nav-title">Pulpo AR VTO Demo</h1>
+      <div class="nav-links">
+        <a href="/landing-page.html" class="nav-link">Landing Page</a>
+        <a href="/pdp.html" class="nav-link">PDP</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Landing Page Content -->
+  <div class="page active">
+    <div class="container">
+      <!-- Main Content Grid -->
+      <div class="content">
       <!-- Left: Iframe Container -->
       <div class="iframe-container">
         <!-- Replace iframe src with your own plugin URL -->
@@ -90,7 +103,7 @@
               <!-- Variant Selection -->
               <div class="form-group">
                 <label for="variant-select">Select Variants (hold Ctrl/Cmd to select multiple)</label>
-                <select id="variant-select" multiple size="10" required>
+                <select id="variant-select" multiple size="6" required>
                   <option value="">Loading variants from plugin...</option>
                 </select>
                 <small class="help-text">Variants will load after plugin initializes (onReady event)</small>
@@ -198,7 +211,7 @@
                     <!-- Variant Selection (Single) -->
                     <div class="form-group">
                       <label for="catalog-variant-select">Select Variant</label>
-                      <select id="catalog-variant-select" size="8" required>
+                      <select id="catalog-variant-select" size="5" required>
                         <option value="">Loading variants from plugin...</option>
                       </select>
                       <small class="help-text">Variants will load after plugin initializes (onReady event)</small>
@@ -220,7 +233,8 @@
       </div>
     </div>
   </div>
+  </div>
 
-  <script src="index.js"></script>
+  <script type="module" src="landing-page.js"></script>
 </body>
 </html>
