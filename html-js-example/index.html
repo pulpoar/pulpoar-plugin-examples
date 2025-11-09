@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulpo AR VTO - HTML/JS Integration Example</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js"></script>
+
+</head>
+<body>
+  <div class="container">
+    <!-- Main Content Grid -->
+    <div class="content">
+      <!-- Left: Iframe Container -->
+      <div class="iframe-container">
+        <!-- Replace iframe src with your own plugin URL -->
+        <iframe
+          id="pulpo-vto"
+          src="https://plugin.pulpoar.com/vto/makeup-demo-1"
+          allow="camera *"
+          title="Pulpo AR Virtual Try-On"
+        ></iframe>
+      </div>
+
+      <!-- Right: Events & Actions Panel -->
+      <div class="events-panel">
+        <!-- Collapse Button -->
+        <button class="collapse-button" onclick="toggleSidebar()" title="Collapse sidebar">
+          <span class="collapse-icon">◀</span>
+        </button>
+
+        <!-- Tab Navigation -->
+        <div class="tab-navigation">
+          <button class="tab-button active" onclick="switchTab('events')">Events</button>
+          <button class="tab-button" onclick="switchTab('actions')">Actions</button>
+        </div>
+
+        <!-- Events Tab Content -->
+        <div id="events-tab" class="tab-content active">
+          <div class="events-header">
+            <h2>
+              Event Log
+              <span class="event-count-badge" id="event-count">0</span>
+            </h2>
+            <button class="clear-button" onclick="clearEvents()">Clear Events</button>
+            <div class="status-indicator">
+              <span class="status-dot"></span>
+              <span>Listening for events...</span>
+            </div>
+          </div>
+
+          <div class="events-log" id="events-log">
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <div class="empty-state-text">No events yet</div>
+              <div class="empty-state-subtext">Interact with the AR experience to see events appear here</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actions Tab Content -->
+        <div id="actions-tab" class="tab-content">
+          <div class="actions-header">
+            <h2>SDK Actions</h2>
+            <p class="actions-subtitle">Test SDK functionality and control the plugin</p>
+          </div>
+
+          <div class="actions-content">
+            <div class="accordion">
+              <!-- Stock Management Accordion -->
+              <div class="accordion-item">
+                <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+                  <span>Stock Management</span>
+                  <span class="accordion-icon">▼</span>
+                </button>
+                <div class="accordion-content active">
+                  <form id="stock-form" onsubmit="updateStock(event)">
+              <!-- Search Filter -->
+              <div class="form-group">
+                <label for="variant-search">Search Variants</label>
+                <input
+                  type="text"
+                  id="variant-search"
+                  placeholder="Type to filter variants..."
+                  oninput="filterVariants()"
+                />
+              </div>
+
+              <!-- Variant Selection -->
+              <div class="form-group">
+                <label for="variant-select">Select Variants (hold Ctrl/Cmd to select multiple)</label>
+                <select id="variant-select" multiple size="10" required>
+                  <option value="">Loading variants from plugin...</option>
+                </select>
+                <small class="help-text">Variants will load after plugin initializes (onReady event)</small>
+              </div>
+
+              <!-- Status Selection -->
+              <div class="form-group">
+                <label>Action</label>
+                <div class="radio-group-vertical">
+                  <label class="radio-label">
+                    <input type="radio" name="status" value="enable" />
+                    <span>Enable (In Stock)</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="status" value="disable" checked />
+                    <span>Disable (Out of Stock)</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Out of Stock Text -->
+              <div class="form-group" id="out-of-stock-group">
+                <label for="out-of-stock-text">Out of Stock Message</label>
+                <input
+                  type="text"
+                  id="out-of-stock-text"
+                  placeholder="e.g., Currently unavailable"
+                  value="Out of stock"
+                />
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" class="submit-button">Update Variants</button>
+
+              <!-- Response Area -->
+              <div id="action-response" class="response-area"></div>
+            </form>
+                </div>
+              </div>
+
+              <!-- Navigation Control Accordion -->
+              <div class="accordion-item">
+                <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+                  <span>Navigation Control</span>
+                  <span class="accordion-icon">▼</span>
+                </button>
+                <div class="accordion-content">
+                  <form id="navigation-form" onsubmit="navigateToPath(event)">
+                    <!-- Path Selection -->
+                    <div class="form-group">
+                      <label>Select Page</label>
+                      <div class="radio-group-vertical">
+                        <label class="radio-label">
+                          <input type="radio" name="path" value="root" checked />
+                          <span>Home / Root</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="path" value="choose-model" />
+                          <span>Choose Model</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="path" value="take-photo" />
+                          <span>Take Photo</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="path" value="apply-live" />
+                          <span>Apply Live (Camera)</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="submit-button">Navigate</button>
+
+                    <!-- Response Area -->
+                    <div id="navigation-response" class="response-area"></div>
+                  </form>
+                </div>
+              </div>
+
+              <!-- Apply Variants with Catalog Accordion -->
+              <div class="accordion-item">
+                <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+                  <span>Apply Variants with Catalog</span>
+                  <span class="accordion-icon">▼</span>
+                </button>
+                <div class="accordion-content">
+                  <form id="catalog-form" onsubmit="applyCatalogVariant(event)">
+                    <!-- Description -->
+                    <p class="help-text" style="margin-bottom: 15px;">
+                      Initialize variants by slugs and automatically select their corresponding products, category, and brand in the catalog hierarchy. Only works when catalog is initialized.
+                    </p>
+
+                    <!-- Search Filter -->
+                    <div class="form-group">
+                      <label for="catalog-variant-search">Search Variants</label>
+                      <input
+                        type="text"
+                        id="catalog-variant-search"
+                        placeholder="Type to filter variants..."
+                        oninput="filterCatalogVariants()"
+                      />
+                    </div>
+
+                    <!-- Variant Selection (Single) -->
+                    <div class="form-group">
+                      <label for="catalog-variant-select">Select Variant</label>
+                      <select id="catalog-variant-select" size="8" required>
+                        <option value="">Loading variants from plugin...</option>
+                      </select>
+                      <small class="help-text">Variants will load after plugin initializes (onReady event)</small>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <button type="submit" class="submit-button">Apply Variant</button>
+                    <button type="button" class="submit-button" style="margin-top: 10px; background: #666;" onclick="resetCatalog(event)">Reset Catalog</button>
+
+                    <!-- Response Area -->
+                    <div id="catalog-response" class="response-area"></div>
+                  </form>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>

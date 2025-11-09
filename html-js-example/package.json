@@ -1,0 +1,16 @@
+{
+  "name": "html-js-example",
+  "version": "1.0.0",
+  "description": "HTML/JS example for Pulpo AR SDK integration",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^5.0.0"
+  }
+}
