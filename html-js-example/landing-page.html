@@ -227,6 +227,79 @@
                 </div>
               </div>
 
+              <!-- Variant Visibility Accordion -->
+              <div class="accordion-item">
+                <button type="button" class="accordion-header" onclick="toggleAccordion(this)">
+                  <span>Variant Visibility</span>
+                  <span class="accordion-icon">▼</span>
+                </button>
+                <div class="accordion-content">
+                  <form id="visibility-form" onsubmit="updateVisibility(event)">
+                    <!-- Description -->
+                    <p class="help-text" style="margin-bottom: 15px;">
+                      Control which variants are visible in the catalog. Hidden variants are completely removed from the UI.
+                    </p>
+
+                    <!-- Search Filter -->
+                    <div class="form-group">
+                      <label for="visibility-variant-search">Search Variants</label>
+                      <input
+                        type="text"
+                        id="visibility-variant-search"
+                        placeholder="Type to filter variants..."
+                        oninput="filterVisibilityVariants()"
+                      />
+                    </div>
+
+                    <!-- Variant Selection (Multi) -->
+                    <div class="form-group">
+                      <label for="visibility-variant-select">Select Variants (hold Ctrl/Cmd to select multiple)</label>
+                      <select id="visibility-variant-select" multiple size="6" required>
+                        <option value="">Loading variants from plugin...</option>
+                      </select>
+                      <small class="help-text">Variants will load after plugin initializes (onReady event)</small>
+                    </div>
+
+                    <!-- Visibility Action -->
+                    <div class="form-group">
+                      <label>Action</label>
+                      <div class="radio-group-vertical">
+                        <label class="radio-label">
+                          <input type="radio" name="visibility-action" value="hide" checked />
+                          <span>Hide selected variants</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="visibility-action" value="show" />
+                          <span>Show selected variants</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Mode Selection -->
+                    <div class="form-group">
+                      <label>Mode</label>
+                      <div class="radio-group-vertical">
+                        <label class="radio-label">
+                          <input type="radio" name="visibility-mode" value="merge" checked />
+                          <span>Merge (update only selected variants)</span>
+                        </label>
+                        <label class="radio-label">
+                          <input type="radio" name="visibility-mode" value="replace" />
+                          <span>Replace (reset all, then apply selected)</span>
+                        </label>
+                      </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <button type="submit" class="submit-button">Apply Visibility</button>
+                    <button type="button" class="submit-button secondary-button" onclick="showAllVariants()">Show All Variants</button>
+
+                    <!-- Response Area -->
+                    <div id="visibility-response" class="response-area"></div>
+                  </form>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>

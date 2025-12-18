@@ -206,6 +206,7 @@ function handleReady(data) {
   populateDropdown('catalog-variant-select', state.allVariants, {
     placeholder: '-- Select a variant --',
   })
+  populateDropdown('visibility-variant-select', state.allVariants)
 }
 
 function subscribeToEvents() {
@@ -439,6 +440,56 @@ function resetCatalog(event) {
   }
 }
 
+function updateVisibility(event) {
+  event.preventDefault()
+
+  const select = document.getElementById('visibility-variant-select')
+  const selectedOptions = Array.from(select.selectedOptions)
+
+  if (selectedOptions.length === 0) {
+    showMessage('visibility-response', 'Please select at least one variant', 'error')
+    return
+  }
+
+  const slugs = selectedOptions.map(opt => opt.value)
+  const action = document.querySelector('input[name="visibility-action"]:checked').value
+  const mode = document.querySelector('input[name="visibility-mode"]:checked').value
+  const hidden = action === 'hide'
+
+  const params = {
+    variants: slugs.map(slug => ({ slug, hidden })),
+    mode,
+  }
+
+  try {
+    pulpoar.setVariantsVisibility(params, response => {
+      const actionText = hidden ? 'hidden' : 'shown'
+      const message = `${slugs.length} variant(s) ${actionText} (mode: ${mode})`
+      showMessage('visibility-response', message, 'success')
+
+      console.log('[Visibility Update]', { params, response })
+    })
+  } catch (error) {
+    showMessage('visibility-response', `Error: ${error.message}`, 'error')
+    console.error('[Visibility Update Error]', error)
+  }
+}
+
+function showAllVariants() {
+  const params = { variants: [], mode: 'replace' }
+
+  try {
+    pulpoar.setVariantsVisibility(params, response => {
+      showMessage('visibility-response', 'All variants are now visible', 'success')
+
+      console.log('[Show All Variants]', { params, response })
+    })
+  } catch (error) {
+    showMessage('visibility-response', `Error: ${error.message}`, 'error')
+    console.error('[Show All Variants Error]', error)
+  }
+}
+
 // ============================================
 // INITIALIZATION
 // ============================================
@@ -467,3 +518,7 @@ window.applyCatalogVariant = applyCatalogVariant
 window.resetCatalog = resetCatalog
 window.filterCatalogVariants = () =>
   filterDropdown('catalog-variant-search', 'catalog-variant-select', true)
+window.updateVisibility = updateVisibility
+window.showAllVariants = showAllVariants
+window.filterVisibilityVariants = () =>
+  filterDropdown('visibility-variant-search', 'visibility-variant-select', false)

@@ -442,7 +442,7 @@
 }
 
 .accordion-content.active {
-  max-height: 800px;
+  max-height: 1200px;
   padding: 20px 18px;
 }
 
@@ -496,6 +496,22 @@
 
 .submit-button:active {
   background: #000;
+}
+
+.submit-button.secondary-button {
+  background: #666;
+  margin-top: 10px;
+}
+
+.submit-button.secondary-button:hover {
+  background: #555;
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
 }
 
 /* Response Area */
