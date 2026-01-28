@@ -144,9 +144,13 @@ function scheduleStatusHide(element) {
 
 function updateButtonState() {
   const tryOnButton = getTryOnButton()
-  if (!tryOnButton) return
+  if (!tryOnButton) {
+    console.warn('Try-on button not found')
+    return
+  }
 
   const shouldEnable = canEnableTryOn()
+  console.log('Updating button state:', { shouldEnable, isSDKReady: state.isSDKReady, selectedVariant: state.selectedVariant })
   tryOnButton.disabled = !shouldEnable
 }
 
@@ -164,17 +168,19 @@ function setupPDPEventListeners() {
 }
 
 function registerSDKReadyHandler() {
-  pulpoar.onReady(() => {
+  pulpoar.onReady((payload) => {
+    console.log('SDK onReady fired', payload)
     state.isSDKReady = true
-    showStatusPDP('SDK ready')
+    logEvent('onReady', payload)
     updateButtonState()
+    console.log('Button state after ready:', { isSDKReady: state.isSDKReady, selectedVariant: state.selectedVariant, canEnable: canEnableTryOn() })
   })
 }
 
 function registerSDKErrorHandler() {
   pulpoar.onError(payload => {
     const errorMessage = payload || 'Unknown error occurred'
-    showStatusPDP(`Error: ${errorMessage}`, true)
+    logEvent('onError', payload)
     state.isSDKReady = false
     updateButtonState()
   })
@@ -208,13 +214,13 @@ function deselectAllSwatches(swatches) {
 function selectSwatch(swatch) {
   swatch.classList.add(CSS_CLASSES.ACTIVE)
   state.selectedVariant = swatch.dataset[DATA_ATTRIBUTES.VARIANT]
-  showStatusPDP(`Selected color: ${state.selectedVariant}`)
+  logEvent('Color Selected', { variant: state.selectedVariant, title: swatch.title })
   updateButtonState()
 }
 
 function applyVariantToSDK(swatch) {
   SDKOperations.applyVariant(state.selectedVariant)
-  showStatusPDP(`Switched to: ${swatch.title}`)
+  logEvent('Variant Applied', { variant: state.selectedVariant, title: swatch.title })
 }
 
 // ============================================
@@ -230,7 +236,7 @@ function setupTryOnButtonHandler() {
 
 function handleTryOnButtonClick() {
   if (!isColorSelected()) {
-    showStatusPDP('Please select a color first', true)
+    logEvent('Please select a color first', { error: true })
     return
   }
 
@@ -265,7 +271,7 @@ function showSDK(container) {
     tryOnButton.textContent = SDK_CONFIG.BUTTON_TEXT.HIDE_SDK
   }
 
-  showStatusPDP('Makeup Experience activated')
+  logEvent('Try-On Activated', { variant: state.selectedVariant, model: defaultModel })
 }
 
 function hideSDK(container) {
@@ -278,7 +284,7 @@ function hideSDK(container) {
     tryOnButton.textContent = SDK_CONFIG.BUTTON_TEXT.SHOW_SDK
   }
 
-  showStatusPDP('Makeup Experience closed')
+  logEvent('Try-On Closed', {})
 }
 
 function getDefaultModel() {
@@ -298,8 +304,25 @@ function initPDPInteractions() {
 // ENTRY POINT
 // ============================================
 
+function waitForPulpoar(callback, maxAttempts = 50) {
+  let attempts = 0
+  const checkInterval = setInterval(() => {
+    attempts++
+    if (typeof pulpoar !== 'undefined') {
+      clearInterval(checkInterval)
+      console.log('Pulpoar SDK found, initializing PDP...')
+      callback()
+    } else if (attempts >= maxAttempts) {
+      clearInterval(checkInterval)
+      console.error('Pulpoar SDK not found after', maxAttempts, 'attempts')
+    }
+  }, 100)
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-  console.log('DOMContentLoaded fired, initializing...')
-  setupPDPEventListeners()
-  initPDPInteractions()
+  console.log('DOMContentLoaded fired, waiting for pulpoar SDK...')
+  waitForPulpoar(() => {
+    setupPDPEventListeners()
+    initPDPInteractions()
+  })
 })

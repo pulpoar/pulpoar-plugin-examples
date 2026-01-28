@@ -1,0 +1,94 @@
+<div class="drawer" id="events-drawer">
+  <div class="drawer-header">
+    <h2>Events & Actions</h2>
+    <button class="close-drawer" onclick="closeDrawers()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div class="tab-navigation">
+    <button class="tab-button active" onclick="switchTab('events')">Events</button>
+    <button class="tab-button" onclick="switchTab('actions')">Actions</button>
+  </div>
+  <div id="events-tab" class="tab-content active">
+    <div class="events-header">
+      <h3>Event Log <span class="event-count-badge" id="event-count">0</span></h3>
+      <button class="clear-button" onclick="clearEvents()">Clear Events</button>
+    </div>
+    <div class="events-log" id="event-log">
+      <div style="text-align: center; padding: 50px 20px; color: #999;">
+        <div style="font-size: 3rem; margin-bottom: 15px; opacity: 0.4;">📭</div>
+        <div style="font-size: 1rem; font-weight: 500; margin-bottom: 6px; color: #666;">No events yet</div>
+        <div style="font-size: 0.85rem; color: #999;">Interact with the VTO experience to see events</div>
+      </div>
+    </div>
+  </div>
+  <div id="actions-tab" class="tab-content">
+    <div class="actions-content">
+      <h3 style="margin-top: 0;">SDK Actions</h3>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Control the plugin with SDK methods</p>
+      
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        
+        <!-- Navigation -->
+        <details style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
+          <summary style="padding: 12px 15px; cursor: pointer; font-weight: 600; background: #fafafa; user-select: none;">Navigation Control</summary>
+          <div style="padding: 15px;">
+            <button onclick="navigateTo('root')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Root</button>
+            <button onclick="navigateTo('choose-model')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Choose Model</button>
+            <button onclick="navigateTo('take-photo')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Take Photo</button>
+            <button onclick="navigateTo('apply-live')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Apply Live</button>
+            <button onclick="navigateTo('apply-photo')" style="width: 100%; padding: 10px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Apply Photo</button>
+          </div>
+        </details>
+
+        <!-- Apply Variants -->
+        <details style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
+          <summary style="padding: 12px 15px; cursor: pointer; font-weight: 600; background: #fafafa; user-select: none;">Apply Variants</summary>
+          <div style="padding: 15px;">
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Apply variants by slug (comma-separated)</p>
+            <input type="text" id="apply-variants-input" placeholder="variant-slug-1, variant-slug-2" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem;">
+            <button onclick="applyVariants()" style="width: 100%; padding: 10px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Apply Variants</button>
+            <button onclick="resetVariants()" style="width: 100%; padding: 10px; margin-top: 8px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Reset Variants</button>
+          </div>
+        </details>
+
+        <!-- Apply with Catalog -->
+        <details style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
+          <summary style="padding: 12px 15px; cursor: pointer; font-weight: 600; background: #fafafa; user-select: none;">Apply Variants with Catalog</summary>
+          <div style="padding: 15px;">
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Auto-select in catalog hierarchy</p>
+            <input type="text" id="catalog-variants-input" placeholder="variant-slug" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem;">
+            <button onclick="applyWithCatalog()" style="width: 100%; padding: 10px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Apply with Catalog</button>
+            <button onclick="resetCatalog()" style="width: 100%; padding: 10px; margin-top: 8px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Reset Catalog</button>
+          </div>
+        </details>
+
+        <!-- Camera Control -->
+        <details style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
+          <summary style="padding: 12px 15px; cursor: pointer; font-weight: 600; background: #fafafa; user-select: none;">Camera Control</summary>
+          <div style="padding: 15px;">
+            <button onclick="initCamera('user')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Init Front Camera</button>
+            <button onclick="initCamera('environment')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Init Back Camera</button>
+            <button onclick="setCameraFeed('enabled')" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #000; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Enable Camera Feed</button>
+            <button onclick="setCameraFeed('disabled')" style="width: 100%; padding: 10px; background: #666; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Disable Camera Feed</button>
+          </div>
+        </details>
+
+        <!-- Stock Management -->
+        <details style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; overflow: hidden;">
+          <summary style="padding: 12px 15px; cursor: pointer; font-weight: 600; background: #fafafa; user-select: none;">Stock Management</summary>
+          <div style="padding: 15px;">
+            <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Set variant stock status</p>
+            <input type="text" id="stock-variant-input" placeholder="variant-slug" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem;">
+            <input type="text" id="stock-message-input" placeholder="Out of stock message" value="Out of stock" style="width: 100%; padding: 8px; border: 2px solid #e0e0e0; border-radius: 4px; margin-bottom: 10px; font-size: 0.9rem;">
+            <button onclick="setVariantStock(true)" style="width: 100%; padding: 10px; margin-bottom: 8px; background: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Mark Out of Stock</button>
+            <button onclick="setVariantStock(false)" style="width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">Mark In Stock</button>
+          </div>
+        </details>
+
+      </div>
+    </div>
+  </div>
+</div>
