@@ -16,6 +16,39 @@ body {
 }
 
 /* Navigation */
+.header-nav {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 1200px;
+  padding: 10px 0;
+  margin: 0 auto;
+}
+
+.nav-button {
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.nav-button:hover {
+  opacity: 0.6;
+}
+
+.nav-separator {
+  width: 1px;
+  height: 16px;
+  background: #e0e0e0;
+}
+
 .main-nav {
   background: #000;
   color: white;

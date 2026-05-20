@@ -4,7 +4,8 @@ HTML/JavaScript integration example demonstrating two implementation patterns fo
 
 ## Features
 
-- **Two page implementations**: Landing Page  and PDP
+- **Three page implementations**: Landing Page, PDP, and Modal
+- **Drawer system**: Centralized events and guide drawers
 - **Event logging**: Real-time monitoring of 27+ SDK events
 - **SDK action controls**: Stock management, navigation, catalog controls
 - **Clean, declarative code**: Organized with constants, state management, and single-responsibility functions
@@ -27,16 +28,22 @@ Vite will start at `http://localhost:3000` and automatically open the Landing Pa
 
 ```
 html-js-example/
-├── landing-page.html   # Landing page
-├── landing-page.js     # Landing page event handlers & SDK integration
-├── pdp.html           # Product detail page with try-on overlay
-├── pdp.js             # PDP SDK integration
-├── common.css         # Shared base styles and navigation
-├── landing-page.css   # Landing page-specific styles
-├── pdp.css            # PDP page-specific styles
-├── vite.config.js     # Multi-page Vite configuration
-├── package.json       # Dependencies
-└── README.md          # This file
+├── index.html              # Main menu page
+├── landing-page.html       # Landing page
+├── pdp.html               # Product detail page
+├── vto-modal.html         # Modal integration
+├── drawer-core.js         # Drawer system functions
+├── drawer-loader.js       # Dynamic drawer HTML loader
+├── drawer-styles.css      # Drawer system styles
+├── drawer-events-vto.html # Events & Actions drawer
+├── drawer-guide-vto.html  # Integration guide drawer
+├── vto-actions.js         # SDK action functions
+├── vto-events.js          # SDK event subscriptions
+├── pdp.js                 # PDP SDK integration
+├── common.css             # Shared base styles
+├── vite.config.js         # Multi-page Vite configuration
+├── package.json           # Dependencies
+└── README.md              # This file
 ```
 
 ## Page Implementations

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VTO Plugin Examples</title>
+    <style>
+      * {
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+      }
+
+      a,
+      button {
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      body {
+        font-family: system-ui, sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f5f5f5;
+        color: #1f2933;
+      }
+
+      .container {
+        text-align: center;
+        background: white;
+        padding: 24px;
+        border-radius: 12px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        max-width: 600px;
+      }
+
+      .sections {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-top: 20px;
+        width: 100%;
+      }
+
+      .card {
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .card h2 {
+        margin: 0;
+        font-size: 16px;
+        color: #0f172a;
+      }
+
+      .card p {
+        margin: 0;
+        font-size: 13px;
+        color: #475569;
+      }
+
+      .links {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 8px;
+      }
+
+      .link-button {
+        background: #fff;
+        color: #000;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 10px 14px;
+        border-radius: 4px;
+        border: 2px solid #000;
+        transition: background 0.2s ease, color 0.2s ease;
+        text-align: center;
+        font-size: 14px;
+      }
+
+      .link-button:hover {
+        background: #000;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>VTO Plugin Examples</h1>
+      <p>Select any integration example to open it in your browser:</p>
+      <div class="sections">
+        <div class="card">
+          <h2>VTO Examples</h2>
+          <p>Try the VTO plugin with different integration patterns.</p>
+          <div class="links">
+            <a class="link-button" href="./vto-modal.html">Open VTO Modal</a>
+            <a class="link-button" href="./landing-page.html">Open Landing Page</a>
+            <a class="link-button" href="./pdp.html">Open Product Detail Page</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<div class="drawer" id="guide-drawer">
+  <div class="drawer-header">
+    <h2>VTO Integration Guide</h2>
+    <button class="close-drawer" onclick="closeDrawers()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M18 6L6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+  <div style="flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 40px; background: #fafafa;">
+    
+    <!-- Required Iframe Dimensions -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #000;">
+      <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 700;">Required Iframe Dimensions</h3>
+      <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;"><strong>Strongly recommended</strong> to prevent UI inconsistencies and incorrect breakpoint triggering.</p>
+      
+      <h4 style="font-size: 1rem; font-weight: 600; margin-top: 15px; margin-bottom: 8px;">Embedded Integration</h4>
+      <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+        <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 0.9rem;">Desktop</p>
+        <ul style="margin: 0; padding-left: 20px; font-size: 0.85rem;">
+          <li><strong>Width:</strong> 1200px</li>
+          <li><strong>Height:</strong> 720px</li>
+        </ul>
+      </div>
+      <div style="background: #f5f5f5; padding: 12px; border-radius: 6px;">
+        <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 0.9rem;">Mobile</p>
+        <ul style="margin: 0; padding-left: 20px; font-size: 0.85rem;">
+          <li><strong>Width:</strong> 100%</li>
+          <li><strong>Height:</strong> 768px</li>
+        </ul>
+      </div>
+
+      <h4 style="font-size: 1rem; font-weight: 600; margin-top: 20px; margin-bottom: 8px;">Modal Integration</h4>
+      <div style="background: #f5f5f5; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+        <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 0.9rem;">Desktop Modal</p>
+        <ul style="margin: 0; padding-left: 20px; font-size: 0.85rem;">
+          <li><strong>Width:</strong> 1160px</li>
+          <li><strong>Height:</strong> 700px</li>
+        </ul>
+      </div>
+      <div style="background: #f5f5f5; padding: 12px; border-radius: 6px;">
+        <p style="font-weight: 600; margin: 0 0 8px 0; font-size: 0.9rem;">Tablet & Mobile Fullscreen</p>
+        <ul style="margin: 0; padding-left: 20px; font-size: 0.85rem;">
+          <li><strong>Width:</strong> 100%</li>
+          <li><strong>Height:</strong> 100dvh</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Breakpoints -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #000;">
+      <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 700;">Breakpoints</h3>
+      <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">UI automatically adapts based on iframe width:</p>
+      <ul style="font-size: 0.85rem; line-height: 1.8;">
+        <li><strong>Desktop:</strong> 1135px and above</li>
+        <li><strong>Tablet:</strong> 701px – 1134px</li>
+        <li><strong>Mobile:</strong> 700px and below</li>
+      </ul>
+      <div style="background: #fff3cd; border: 1px solid #ffc107; padding: 12px; border-radius: 6px; margin-top: 15px;">
+        <p style="font-size: 0.85rem; font-weight: 600; margin: 0 0 8px 0; color: #856404;">Critical Warning</p>
+        <p style="font-size: 0.8rem; margin: 0; color: #856404; line-height: 1.6;">Iframe dimensions directly determine UI rendering. Deviating from recommended dimensions may cause unexpected breakpoint switching, component overlap, and layout issues.</p>
+      </div>
+    </div>
+
+    <!-- Integration Types -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #000;">
+      <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 700;">Integration Types</h3>
+      
+      <h4 style="font-size: 1rem; font-weight: 600; margin-top: 15px; margin-bottom: 8px;">Landing Page Integration</h4>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Presents all products associated with the project. VTO plugin retrieves all project data and renders a catalog.</p>
+      
+      <h4 style="font-size: 1rem; font-weight: 600; margin-top: 15px; margin-bottom: 8px;">Product Detail Integration</h4>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">VTO plugin exclusively serves a specific product. Retrieves data only for the relevant product.</p>
+    </div>
+
+    <!-- Camera Permission -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #000;">
+      <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 700;">Camera Permission</h3>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">Always include camera permission in iframe:</p>
+      <pre style="background: #f5f5f5; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; border: 1px solid #e0e0e0;"><code>&lt;iframe allow="camera *;" src="..."&gt;&lt;/iframe&gt;</code></pre>
+    </div>
+
+    <!-- Overlay Patterns -->
+    <div style="background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #000;">
+      <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 700;">Overlay Integration Patterns</h3>
+      
+      <h4 style="font-size: 1rem; font-weight: 600; margin-top: 15px; margin-bottom: 8px;">Desktop Modal (≥1135px)</h4>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Display in centered modal/popup overlay. Provides focused experience while maintaining context. Include close button for easy dismissal.</p>
+      
+      <h4 style="font-size: 1rem; font-weight: 600; margin-top: 15px; margin-bottom: 8px;">Tablet & Mobile Fullscreen (≤1134px)</h4>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 15px;">Fullscreen overlay recommended to maximize screen space. Iframe should occupy 100% viewport with body scroll locked. Include close button or gesture.</p>
+    </div>
+
+    <!-- SDK Integration -->
+    <div style="background: white; padding: 20px; border-radius: 8px; border-left: 4px solid #000;">
+      <h3 style="margin-top: 0; font-size: 1.1rem; font-weight: 700;">SDK Integration</h3>
+      <p style="font-size: 0.85rem; color: #666; margin-bottom: 10px;">Load SDK script for event handling and actions:</p>
+      <pre style="background: #f5f5f5; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; border: 1px solid #e0e0e0; margin-bottom: 12px;"><code>&lt;script src="https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js"&gt;&lt;/script&gt;</code></pre>
+      <p style="font-size: 0.85rem; color: #666; margin: 0;">Use the Events & Actions drawer to monitor 27 SDK events and control plugin behavior with 9 SDK actions.</p>
+    </div>
+
+  </div>
+</div>

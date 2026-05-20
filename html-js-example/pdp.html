@@ -4,20 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pulpo AR VTO - Product Detail Page</title>
+  <link rel="stylesheet" href="drawer-styles.css">
   <link rel="stylesheet" href="common.css">
   <link rel="stylesheet" href="pdp.css">
   <script src="https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js"></script>
 </head>
 <body>
-  <!-- Navigation Header -->
-  <nav class="main-nav">
-    <div class="nav-content">
-      <h1 class="nav-title">Pulpo AR VTO Demo</h1>
-      <div class="nav-links">
-        <a href="/landing-page.html" class="nav-link">Landing Page</a>
-        <a href="/pdp.html" class="nav-link">PDP</a>
-      </div>
-    </div>
+  <!-- Navigation -->
+  <nav class="header-nav">
+    <a href="./index.html" class="nav-button" title="Back to Index">
+      ← Back
+    </a>
+    <div class="nav-separator"></div>
+    <button class="nav-button" onclick="toggleDrawer('events')" title="SDK Events & Actions">
+      Events & Actions
+    </button>
+    <div class="nav-separator"></div>
+    <button class="nav-button" onclick="toggleDrawer('guide')" title="Integration Guide">
+      Guide
+    </button>
   </nav>
 
   <!-- PDP Page Content -->
@@ -66,6 +71,18 @@
     </div> 
   </div>
 
-  <script type="module" src="pdp.js"></script>
+  <!-- Drawer Container - Dynamically loaded -->
+  <div id="drawer-container"></div>
+
+  <script src="drawer-loader.js"></script>
+  <script src="drawer-core.js"></script>
+  <script src="vto-actions.js"></script>
+  <script src="vto-events.js"></script>
+  <script src="pdp.js"></script>
+  <script>
+    loadDrawers('vto').then(() => {
+      subscribeToVTOEvents();
+    });
+  </script>
 </body>
 </html>
