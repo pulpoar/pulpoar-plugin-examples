@@ -108,8 +108,9 @@ class PulpoARFragment : Fragment() {
                 return true
             }
         }
-        webView.addJavascriptInterface(SDKInterface(), "AndroidInterface")
-        sdk = SDKInterface()
+        val goToProductHandler: (String) -> Unit = { link -> launchProductDetail(link) }
+        webView.addJavascriptInterface(SDKInterface(goToProductHandler), "AndroidInterface")
+        sdk = SDKInterface(goToProductHandler)
         webView.webViewClient = object : WebViewClient() {
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
@@ -121,6 +122,7 @@ class PulpoARFragment : Fragment() {
                             Events.onReady,
                             Events.onAddToCart,
                             Events.onPathChange,
+                            Events.onGoToProduct,
                         )
                     )
                 ) { data -> Log.i("Js Result:", data) }
@@ -140,6 +142,17 @@ class PulpoARFragment : Fragment() {
 
     fun setPath(path: String) {
         actions.setPath(path)
+    }
+
+    private fun launchProductDetail(url: String) {
+        // Marshal back to the main thread because JavascriptInterface callbacks
+        // arrive on a background thread.
+        webView.post {
+            val hostActivity = activity ?: return@post
+            val intent = Intent(hostActivity, ProductDetailActivity::class.java)
+            intent.putExtra(ProductDetailActivity.EXTRA_URL, url)
+            startActivity(intent)
+        }
     }
 
     override fun onRequestPermissionsResult(

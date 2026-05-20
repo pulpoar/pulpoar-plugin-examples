@@ -2,4 +2,11 @@
 <resources>
 
     <style name="AppTheme.NoActionBar" parent="Theme.AppCompat" />
+    <style name="AppTheme.ProductDetail" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryDark">@color/purple_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+    </style>
 </resources>

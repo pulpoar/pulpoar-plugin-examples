@@ -17,10 +17,11 @@ import com.pulpolabs.kotlin_example.data.ModelSelectPayload
 import com.pulpolabs.kotlin_example.data.OpacitySlidePayload
 import com.pulpolabs.kotlin_example.data.Variant
 import com.pulpolabs.kotlin_example.data.ZoomPayload
+import org.json.JSONArray
 import org.json.JSONObject
 import java.util.stream.Collectors
 
-public class SDKInterface {
+public class SDKInterface(private val onGoToProductHandler: ((String) -> Unit)? = null) {
 
     @JavascriptInterface
     fun onReady(payload: String) {
@@ -103,6 +104,37 @@ public class SDKInterface {
     @JavascriptInterface
     fun onGoToProduct(payload: String) {
         Log.d("PulpoAR", "on Go To Product: $payload")
+        try {
+            val link = findWebLink(JSONObject(payload))
+            if (!link.isNullOrEmpty()) {
+                onGoToProductHandler?.invoke(link)
+            } else {
+                Log.w("PulpoAR", "onGoToProduct received variant with no web_link")
+            }
+        } catch (e: Exception) {
+            Log.e("PulpoAR", "Failed to parse onGoToProduct payload", e)
+        }
+    }
+
+    private fun findWebLink(json: JSONObject): String? {
+        json.optString("web_link").takeIf { it.isNotBlank() }?.let { return it }
+
+        val keys = json.keys()
+        while (keys.hasNext()) {
+            when (val value = json.opt(keys.next())) {
+                is JSONObject -> findWebLink(value)?.let { return it }
+                is JSONArray -> {
+                    for (index in 0 until value.length()) {
+                        val item = value.opt(index)
+                        if (item is JSONObject) {
+                            findWebLink(item)?.let { return it }
+                        }
+                    }
+                }
+            }
+        }
+
+        return null
     }
 
     @JavascriptInterface
