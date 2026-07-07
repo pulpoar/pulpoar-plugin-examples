@@ -1,10 +1,10 @@
 # PulpoAR Plugin SDK - HTML/JS Example
 
-HTML/JavaScript integration example demonstrating two implementation patterns for PulpoAR VTO plugin: a landing page with event monitoring and SDK actions, and a product detail page (PDP) with virtual try-on overlay.
+HTML/JavaScript integration example demonstrating three implementation patterns for PulpoAR VTO plugin: a landing page with event monitoring and SDK actions, a product detail page (PDP) with virtual try-on overlay, and a modal launcher.
 
 ## Features
 
-- **Two page implementations**: Landing Page  and PDP
+- **Three page implementations**: Landing Page, PDP, and Modal
 - **Event logging**: Real-time monitoring of 27+ SDK events
 - **SDK action controls**: Stock management, navigation, catalog controls
 - **Clean, declarative code**: Organized with constants, state management, and single-responsibility functions
@@ -22,6 +22,7 @@ Vite will start at `http://localhost:3000` and automatically open the Landing Pa
 **Available Pages:**
 - Landing Page: `http://localhost:3000/landing-page.html`
 - PDP: `http://localhost:3000/pdp.html`
+- Modal: `http://localhost:3000/modal.html`
 
 ## Project Structure
 
@@ -31,6 +32,9 @@ html-js-example/
 ├── landing-page.js     # Landing page event handlers & SDK integration
 ├── pdp.html           # Product detail page with try-on overlay
 ├── pdp.js             # PDP SDK integration
+├── modal.html          # Modal launcher page
+├── modal.js            # Modal SDK integration
+├── modal.css           # Modal page-specific styles
 ├── common.css         # Shared base styles and navigation
 ├── landing-page.css   # Landing page-specific styles
 ├── pdp.css            # PDP page-specific styles
@@ -78,6 +82,26 @@ E-commerce product page with virtual try-on overlay.
 2. Clicking "Try On Virtually" calls `setImageToApply()` with a model face image, `applyVariants()` with selected color, and `setPath('apply-photo')` to display the result
 3. Clicking color swatches while try-on is active calls `applyVariants()` to instantly switch lipstick colors
 4. Iframe overlay fades in/out using opacity transitions (not display:none, so SDK stays loaded)
+
+---
+
+### Modal
+
+Landing-page-style hero that launches the try-on experience in a full-screen modal overlay.
+
+**Access**: `http://localhost:3000/modal.html`
+
+**Features**:
+- Hero section with headline and call-to-action button ("Try It On Now")
+- Full-screen modal overlay with the SDK iframe, closable via close button, backdrop click, or Escape key
+
+**SDK Usage**:
+- **Events**: `onReady` (tracks SDK initialization), `onError` (handles errors)
+
+**Logic**:
+1. Iframe `src` is set once on page load, so the SDK mounts immediately and stays loaded
+2. Clicking the CTA only toggles the modal's visibility; the SDK is not reloaded
+3. Modal closes via the close button, clicking the backdrop, or pressing Escape — SDK state persists across open/close cycles
 
 ---
 

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pulpo AR VTO - Modal Integration</title>
+  <link rel="stylesheet" href="common.css">
+  <link rel="stylesheet" href="modal.css">
+  <script src="https://cdn.jsdelivr.net/npm/@pulpoar/plugin-sdk@latest/dist/index.iife.js"></script>
+</head>
+<body>
+  <!-- Navigation Header -->
+  <nav class="main-nav">
+    <div class="nav-content">
+      <h1 class="nav-title">Pulpo AR VTO Demo</h1>
+      <div class="nav-links">
+        <a href="/landing-page.html" class="nav-link">Landing Page</a>
+        <a href="/pdp.html" class="nav-link">PDP</a>
+        <a href="/modal.html" class="nav-link">Modal</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Modal Page Content -->
+  <div class="page active">
+    <div class="container-modal">
+      <main class="launcher-shell">
+        <section class="launcher-panel">
+          <span class="eyebrow">Virtual Try-On</span>
+          <h1>See It On Your Face</h1>
+          <p class="intro">
+            Try lipsticks, blushes and more on your own face in real time. Find your perfect shade before you buy.
+          </p>
+          <button id="open-modal-button" class="open-button" type="button">Try It On Now</button>
+        </section>
+      </main>
+    </div>
+
+    <div id="modal-overlay" class="modal-overlay">
+      <div class="modal-content">
+        <button id="desktop-close-button" class="desktop-close-button" aria-label="Close">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+        <div class="mobile-header">
+          <button id="mobile-close-button" class="close-button" aria-label="Close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 6L6 18M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+        <iframe id="pulpo-vto-modal" allow="camera *" title="Pulpo AR Virtual Try-On"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="modal.js"></script>
+</body>
+</html>

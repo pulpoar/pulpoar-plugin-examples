@@ -7,6 +7,7 @@ export default defineConfig({
       input: {
         landing: resolve(__dirname, 'landing-page.html'),
         pdp: resolve(__dirname, 'pdp.html'),
+        modal: resolve(__dirname, 'modal.html'),
       },
     },
   },

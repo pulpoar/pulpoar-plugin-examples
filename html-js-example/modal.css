@@ -1,0 +1,204 @@
+/* ============================================ */
+/* MODAL PAGE STYLES */
+/* ============================================ */
+
+.container-modal {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.launcher-shell {
+  width: 100%;
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: #000;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+.launcher-panel {
+  width: min(100%, 620px);
+  padding: clamp(28px, 6vw, 58px);
+  text-align: center;
+}
+
+.launcher-panel .eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+  padding: 4px 12px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  color: #000;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.launcher-panel h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 6vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 700;
+  color: #000;
+}
+
+.launcher-panel .intro {
+  max-width: 440px;
+  margin: 18px auto 30px;
+  color: #555;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.open-button {
+  min-width: min(100%, 270px);
+  min-height: 54px;
+  padding: 0 28px;
+  border: 2px solid #000;
+  border-radius: 4px;
+  background: #fff;
+  color: #000;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.open-button:hover {
+  background: #000;
+  color: #fff;
+}
+
+/* Modal Overlay */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 1001;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.3s;
+  width: 1160px;
+  height: 700px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-overlay.open .modal-content {
+  transform: scale(1);
+}
+
+.desktop-close-button {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10;
+}
+
+.desktop-close-button:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.mobile-header {
+  display: none;
+  align-items: center;
+  justify-content: flex-end;
+  height: 28px;
+  background: white;
+  padding: 0 8px;
+  flex-shrink: 0;
+}
+
+.mobile-header .close-button {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.mobile-header .close-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+#pulpo-vto-modal {
+  border: none;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Modal Responsive Design */
+@media (max-width: 1200px) {
+  .modal-content {
+    width: 100%;
+    height: 100dvh;
+    border-radius: 0;
+  }
+
+  .desktop-close-button {
+    display: none;
+  }
+
+  .mobile-header {
+    display: flex;
+  }
+
+  #pulpo-vto-modal {
+    height: calc(100dvh - 28px);
+  }
+}
+
+@media (max-width: 768px) {
+  .container-modal {
+    padding: 0;
+  }
+
+  .launcher-shell {
+    min-height: 360px;
+    padding: 16px;
+  }
+}
+</content>
