@@ -22,9 +22,9 @@ const SDK_CONFIG = {
     HIDE_SDK: 'Go back to product image',
   },
   MODELS: [
-    'https://plugin.pulpoar.com/vto/images/face-model-women-6.png',
-    'https://plugin.pulpoar.com/vto/images/face-model-women-1.png',
-    'https://plugin.pulpoar.com/vto/images/face-model-women-2.png',
+    'https://plugin.pulpoar.com/vto/images/face-model-women-6.webp',
+    'https://plugin.pulpoar.com/vto/images/face-model-women-1.webp',
+    'https://plugin.pulpoar.com/vto/images/face-model-women-2.webp',
   ],
 }
 
