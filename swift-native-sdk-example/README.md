@@ -2,28 +2,16 @@
 
 A minimal SwiftUI app that runs the native **PulpoModule** makeup engine — no WebView. Try on lipstick, blush or mascara on the live front camera or on a preset model photo.
 
-The SDK binary is distributed separately (see step 1); everything else is a few hundred lines of Swift in five files.
+The SDK comes in as a Swift package (`PulpoSDK/`), so there is nothing to download by hand. Everything else is a few hundred lines of Swift in five files.
 
 ## Requirements
 
 - Xcode 16+
 - **A physical iPhone running iOS 18.4+.** The SDK ships only an `arm64` device slice and an `x86_64` simulator slice, and the simulator has no camera anyway.
 
-## Setup
+## Run it
 
-### 1. Install the SDK
-
-The SDK is not public, so it is not in this repo. Ask PulpoAR for the `PulpoModule.xcframework` folder, then run:
-
-```bash
-./scripts/install-sdk.sh path/to/PulpoModule.xcframework   # or the .zip it came in
-```
-
-This copies it into `Frameworks/` (gitignored), or you can copy it there yourself. The project already links it with **Embed & Sign**.
-
-### 2. Run
-
-Open `swift-native-sdk-example.xcodeproj`, choose your Team under *Signing & Capabilities*, and run on a device.
+Open `swift-native-sdk-example.xcodeproj`, choose your Team under *Signing & Capabilities*, and run on a device. Xcode downloads the SDK automatically the first time.
 
 ## Add it to your own app, step by step
 
@@ -31,14 +19,15 @@ Think of the SDK as a **makeup artist in a box**. You give it a picture of a fac
 
 ### Step 1: Get the box
 
-Ask PulpoAR to send you the `PulpoModule.xcframework` folder.
+Copy the **`PulpoSDK`** folder from this example into your project folder. It holds one small file, `Package.swift`, which tells Xcode where to download the SDK from.
 
 ### Step 2: Put the box in your app
 
-1. Drag `PulpoModule.xcframework` into your Xcode project.
-2. Click your app target and open the **General** tab.
-3. Find **Frameworks, Libraries, and Embedded Content**.
-4. Set `PulpoModule.xcframework` to **Embed & Sign**.
+1. In Xcode, choose **File → Add Package Dependencies…**
+2. Click **Add Local…** and pick the `PulpoSDK` folder.
+3. When asked, add **PulpoModule** to your app target.
+
+Xcode downloads the SDK and puts it in your app for you.
 
 ### Step 3: Set the iPhone version
 

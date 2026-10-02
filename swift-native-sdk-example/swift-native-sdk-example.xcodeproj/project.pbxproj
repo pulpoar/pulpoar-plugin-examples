@@ -7,27 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A10000000000000000000011 /* PulpoModule.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010 /* PulpoModule.xcframework */; };
-		A10000000000000000000012 /* PulpoModule.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A10000000000000000000010 /* PulpoModule.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A10000000000000000000011 /* PulpoModule in Frameworks */ = {isa = PBXBuildFile; productRef = A100000000000000000000B1 /* PulpoModule */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		A10000000000000000000020 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				A10000000000000000000012 /* PulpoModule.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A10000000000000000000001 /* swift-native-sdk-example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "swift-native-sdk-example.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A10000000000000000000010 /* PulpoModule.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PulpoModule.xcframework; sourceTree = "<group>"; };
+		A10000000000000000000010 /* PulpoSDK */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = PulpoSDK; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -43,7 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A10000000000000000000011 /* PulpoModule.xcframework in Frameworks */,
+				A10000000000000000000011 /* PulpoModule in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -54,17 +39,9 @@
 			isa = PBXGroup;
 			children = (
 				A10000000000000000000030 /* swift-native-sdk-example */,
-				A10000000000000000000051 /* Frameworks */,
+				A10000000000000000000010 /* PulpoSDK */,
 				A10000000000000000000052 /* Products */,
 			);
-			sourceTree = "<group>";
-		};
-		A10000000000000000000051 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				A10000000000000000000010 /* PulpoModule.xcframework */,
-			);
-			path = Frameworks;
 			sourceTree = "<group>";
 		};
 		A10000000000000000000052 /* Products */ = {
@@ -85,7 +62,6 @@
 				A10000000000000000000061 /* Sources */,
 				A10000000000000000000040 /* Frameworks */,
 				A10000000000000000000062 /* Resources */,
-				A10000000000000000000020 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -95,6 +71,9 @@
 				A10000000000000000000030 /* swift-native-sdk-example */,
 			);
 			name = "swift-native-sdk-example";
+			packageProductDependencies = (
+				A100000000000000000000B1 /* PulpoModule */,
+			);
 			productName = "swift-native-sdk-example";
 			productReference = A10000000000000000000001 /* swift-native-sdk-example.app */;
 			productType = "com.apple.product-type.application";
@@ -123,6 +102,9 @@
 			);
 			mainGroup = A10000000000000000000050;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				A100000000000000000000A1 /* XCLocalSwiftPackageReference "PulpoSDK" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A10000000000000000000052 /* Products */;
 			projectDirPath = "";
@@ -283,6 +265,20 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		A100000000000000000000A1 /* XCLocalSwiftPackageReference "PulpoSDK" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = PulpoSDK;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		A100000000000000000000B1 /* PulpoModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PulpoModule;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = A10000000000000000000070 /* Project object */;
 }
