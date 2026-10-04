@@ -19,7 +19,7 @@ Think of the SDK as a **makeup artist in a box**. You give it a picture of a fac
 
 ### Step 1: Find the box
 
-The SDK lives in its own repository, **`https://github.com/pulpoar/pulpoar-ios-sdk`**. You need read access to it. There is nothing to copy into your project.
+The SDK lives in its own repository, **`https://github.com/pulpoar/pulpoar-ios-sdk`**. There is nothing to copy into your project: Xcode downloads it for you.
 
 ### Step 2: Put the box in your app
 
