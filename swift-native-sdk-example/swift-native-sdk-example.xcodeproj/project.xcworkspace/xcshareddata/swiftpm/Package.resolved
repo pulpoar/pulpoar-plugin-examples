@@ -1,0 +1,15 @@
+{
+  "originHash" : "56039ef4d4a98e769f02eb1e8b883559d43bfc9073c6e6040ae9924dd12b6211",
+  "pins" : [
+    {
+      "identity" : "pulpoar-ios-sdk",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pulpoar/pulpoar-ios-sdk",
+      "state" : {
+        "revision" : "01d74095624c65bddc3b6913a26e502785caee40",
+        "version" : "0.0.25"
+      }
+    }
+  ],
+  "version" : 3
+}

@@ -2,7 +2,7 @@
 
 A minimal SwiftUI app that runs the native **PulpoModule** makeup engine — no WebView. Try on lipstick, blush or mascara on the live front camera or on a preset model photo.
 
-The SDK comes in as a Swift package (`PulpoSDK/`), so there is nothing to download by hand. Everything else is a few hundred lines of Swift in five files.
+The SDK comes in as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://github.com/pulpoar/pulpoar-ios-sdk), so there is nothing to download by hand. Everything else is a few hundred lines of Swift in five files.
 
 ## Requirements
 
@@ -17,14 +17,14 @@ Open `swift-native-sdk-example.xcodeproj`, choose your Team under *Signing & Cap
 
 Think of the SDK as a **makeup artist in a box**. You give it a picture of a face and tell it which makeup to use. It gives you back the same picture with makeup on.
 
-### Step 1: Get the box
+### Step 1: Find the box
 
-Copy the **`PulpoSDK`** folder from this example into your project folder. It holds one small file, `Package.swift`, which tells Xcode where to download the SDK from.
+The SDK lives in its own repository, **`https://github.com/pulpoar/pulpoar-ios-sdk`**. There is nothing to copy into your project: Xcode downloads it for you.
 
 ### Step 2: Put the box in your app
 
 1. In Xcode, choose **File → Add Package Dependencies…**
-2. Click **Add Local…** and pick the `PulpoSDK` folder.
+2. Paste `https://github.com/pulpoar/pulpoar-ios-sdk` into the search field, set the rule to **Up to Next Major Version** from `0.0.24`, and click **Add Package**.
 3. When asked, add **PulpoModule** to your app target.
 
 Xcode downloads the SDK and puts it in your app for you.
