@@ -24,7 +24,7 @@ struct ContentView: View {
         // As a background the frame sits behind the controls without widening the layout.
         .background {
             Color.black.ignoresSafeArea()
-            FrameView(engine: engine)
+            PulpoFrameView(engine: engine)
         }
         .task { await engine.start() }
         // SwiftUI cancels the previous task when the id changes, so only the latest
@@ -132,21 +132,6 @@ struct ContentView: View {
 
     private func selectionRing(_ isSelected: Bool) -> some View {
         Circle().stroke(.white, lineWidth: isSelected ? 3 : 0)
-    }
-}
-
-/// The only view that reads `engine.frame`, so the 30 fps frame updates re-render
-/// just this image instead of the whole screen.
-private struct FrameView: View {
-    let engine: PulpoEngine
-
-    var body: some View {
-        if let frame = engine.frame {
-            // The engine outputs a square frame; fit it so the whole face stays visible.
-            Image(uiImage: frame)
-                .resizable()
-                .scaledToFit()
-        }
     }
 }
 

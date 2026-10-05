@@ -3,8 +3,8 @@
 //  swift-native-sdk-example
 //
 //  Thin wrapper around the native PulpoModule SDK: loads the face models, runs either
-//  the live front camera or a still model photo through the engine and publishes the
-//  rendered frames to SwiftUI.
+//  the live front camera or a still model photo through the engine and shows the
+//  rendered frames in `frameView` (see PulpoFrameView.swift).
 //
 
 import AVFoundation
@@ -23,7 +23,8 @@ private let FACE_MODEL_URLS = (
 // Square size camera frames are normalized to before entering the engine.
 private let CAMERA_FRAME_SIZE: Int32 = 1080
 
-// @unchecked Sendable: engine and session state is only touched on engineQueue, observed state on main.
+// @unchecked Sendable: engine state is only touched on engineQueue, the session on cameraQueue,
+// observed state on main.
 @Observable
 final class PulpoEngine: NSObject, @unchecked Sendable {
     enum Status: Equatable {
@@ -33,19 +34,27 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
         case failed(String)
     }
 
-    private(set) var frame: UIImage?
     private(set) var status: Status = .idle
     private(set) var faceFound = true
 
+    /// Where rendered frames are drawn. Show it with `PulpoFrameView(engine:)`.
+    @ObservationIgnored let frameView = MetalFrameView.make()
+
     // The native engine is NOT thread-safe. Every PulpoModule call goes through this
-    // serial queue, which is also the camera's sample-buffer queue, so product changes
-    // never race the per-frame setFrame/analyseFace/apply sequence.
+    // serial queue, so product changes never race the per-frame setFrame/analyseFace/apply
+    // sequence.
     @ObservationIgnored private let engineQueue = DispatchQueue(label: "pulpo.engine")
+    // Camera frames arrive on their own queue and then wait their turn on engineQueue.
+    // If the camera delivered straight onto engineQueue, frames would keep jumping ahead
+    // of product changes whenever processing is slower than the camera (heavy makeup,
+    // slower iPhones), and makeup changes would stall.
+    @ObservationIgnored private let cameraQueue = DispatchQueue(label: "pulpo.camera")
     @ObservationIgnored private let session = AVCaptureSession()
 
     // Only touched on engineQueue. True while a still photo (model) is shown instead
     // of the live camera.
     @ObservationIgnored private var isPhotoMode = false
+    @ObservationIgnored private var lastFaceFound: Bool?
 
     // MARK: - Lifecycle
 
@@ -94,14 +103,14 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
             // reset() clears the engine's face tracking and frame geometry. Photos and
             // camera frames have different sizes, so without it makeup renders offset.
             PulpoModule.reset()
-            self.session.startRunning()
         }
+        cameraQueue.async { self.session.startRunning() }
     }
 
     /// Stops the camera and runs a still photo through the engine.
     func showPhoto(_ image: UIImage) {
+        cameraQueue.async { self.session.stopRunning() }
         engineQueue.async {
-            self.session.stopRunning()
             self.isPhotoMode = true
             PulpoModule.reset()
             PulpoModule.setFrame(image.normalizedOrientation())
@@ -145,13 +154,16 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
 
     // MARK: - Rendering
 
-    /// Runs on engineQueue. Applies the products to the current frame and publishes the result.
+    /// Runs on engineQueue. Applies the products to the current frame and shows the result.
     private func render(faceFound: Bool? = nil) {
         PulpoModule.apply()
-        let image = PulpoModule.getResultFrameAsMat()
-        DispatchQueue.main.async {
-            self.frame = image
-            if let faceFound, faceFound != self.faceFound { self.faceFound = faceFound }
+        // A GPU-ready buffer for the Metal view; no UIImage conversion needed.
+        frameView?.display(PulpoModule.getResultFrameAsPixelBuffer())
+
+        // Only bother SwiftUI when the face-found state actually changes.
+        if let faceFound, faceFound != lastFaceFound {
+            lastFaceFound = faceFound
+            DispatchQueue.main.async { self.faceFound = faceFound }
         }
     }
 
@@ -167,7 +179,7 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
         let output = AVCaptureVideoDataOutput()
         output.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         output.alwaysDiscardsLateVideoFrames = true
-        output.setSampleBufferDelegate(self, queue: engineQueue)
+        output.setSampleBufferDelegate(self, queue: cameraQueue)
 
         session.beginConfiguration()
         session.sessionPreset = .hd1920x1080
@@ -200,12 +212,16 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
 // MARK: - Frame loop
 
 extension PulpoEngine: AVCaptureVideoDataOutputSampleBufferDelegate {
-    // Runs on engineQueue for every camera frame.
+    // Runs on cameraQueue for every camera frame. While this waits for engineQueue, the
+    // camera drops newer frames instead of piling them up.
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard !isPhotoMode, let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
-        PulpoModule.setFrameWith(pixelBuffer, targetSize: CAMERA_FRAME_SIZE)
-        render(faceFound: PulpoModule.analyseFace())
+        engineQueue.sync {
+            guard !isPhotoMode else { return }
+            PulpoModule.setFrameWith(pixelBuffer, targetSize: CAMERA_FRAME_SIZE)
+            render(faceFound: PulpoModule.analyseFace())
+        }
     }
 }
 
