@@ -270,7 +270,7 @@
 			repositoryURL = "https://github.com/pulpoar/pulpoar-ios-sdk";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.24;
+				minimumVersion = 0.0.28;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pulpoar/pulpoar-ios-sdk",
       "state" : {
-        "revision" : "01d74095624c65bddc3b6913a26e502785caee40",
-        "version" : "0.0.25"
+        "revision" : "04a56dd2f9046c5a373bb41a08282dc15820f5d0",
+        "version" : "0.0.28"
       }
     }
   ],

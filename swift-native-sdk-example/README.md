@@ -7,7 +7,7 @@ The SDK comes in as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://git
 ## Requirements
 
 - Xcode 16+
-- **A physical iPhone.** The example targets iOS 15.6, but the current SDK build (0.0.24) still requires **iOS 18.4**, so for now it only runs on iOS 18.4+. A 15.6-compatible SDK build is pending from PulpoAR.
+- **A physical iPhone running iOS 15.6 or later.**
 - The SDK ships only an `arm64` device slice and an `x86_64` simulator slice, and the simulator has no camera anyway.
 
 ## Run it
@@ -25,7 +25,7 @@ The SDK lives in its own repository, **`https://github.com/pulpoar/pulpoar-ios-s
 ### Step 2: Put the box in your app
 
 1. In Xcode, choose **File → Add Package Dependencies…**
-2. Paste `https://github.com/pulpoar/pulpoar-ios-sdk` into the search field, set the rule to **Up to Next Major Version** from `0.0.24`, and click **Add Package**.
+2. Paste `https://github.com/pulpoar/pulpoar-ios-sdk` into the search field, set the rule to **Up to Next Major Version** from `0.0.28`, and click **Add Package**.
 3. When asked, add **PulpoModule** to your app target.
 
 Xcode downloads the SDK and puts it in your app for you.
@@ -33,8 +33,6 @@ Xcode downloads the SDK and puts it in your app for you.
 ### Step 3: Set the iPhone version
 
 In your target's **General** tab, set **Minimum Deployments** to **iOS 15.6** or higher.
-
-> For now the SDK itself needs **iOS 18.4**: on older iPhones it won't run until PulpoAR ships a 15.6-compatible build.
 
 ### Step 4: Ask to use the camera
 
