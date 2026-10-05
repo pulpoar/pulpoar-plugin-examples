@@ -7,7 +7,8 @@ The SDK comes in as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://git
 ## Requirements
 
 - Xcode 16+
-- **A physical iPhone running iOS 18.4+.** The SDK ships only an `arm64` device slice and an `x86_64` simulator slice, and the simulator has no camera anyway.
+- **A physical iPhone.** The example targets iOS 15.6, but the current SDK build (0.0.24) still requires **iOS 18.4**, so for now it only runs on iOS 18.4+. A 15.6-compatible SDK build is pending from PulpoAR.
+- The SDK ships only an `arm64` device slice and an `x86_64` simulator slice, and the simulator has no camera anyway.
 
 ## Run it
 
@@ -31,7 +32,9 @@ Xcode downloads the SDK and puts it in your app for you.
 
 ### Step 3: Set the iPhone version
 
-In your target's **General** tab, set **Minimum Deployments** to **iOS 18.4**.
+In your target's **General** tab, set **Minimum Deployments** to **iOS 15.6** or higher.
+
+> For now the SDK itself needs **iOS 18.4**: on older iPhones it won't run until PulpoAR ships a 15.6-compatible build.
 
 ### Step 4: Ask to use the camera
 
@@ -56,7 +59,7 @@ In the screen where you want the makeup, make one engine and start it:
 import SwiftUI
 
 struct TryOnView: View {
-    @State private var engine = PulpoEngine()
+    @StateObject private var engine = PulpoEngine()
 
     var body: some View {
         Color.black
@@ -73,7 +76,7 @@ The engine makes a new picture many times every second. `PulpoFrameView` shows i
 
 ```swift
 struct TryOnView: View {
-    @State private var engine = PulpoEngine()
+    @StateObject private var engine = PulpoEngine()
 
     var body: some View {
         PulpoFrameView(engine: engine)   // the face, with makeup

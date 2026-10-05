@@ -6,7 +6,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var engine = PulpoEngine()
+    @StateObject private var engine = PulpoEngine()
     @State private var selectedIds: Set<String> = []
     // nil = live camera.
     @State private var selectedModel: FaceModel?
