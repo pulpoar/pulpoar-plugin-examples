@@ -8,7 +8,6 @@
 //
 
 import AVFoundation
-import Observation
 import PulpoModule
 import UIKit
 
@@ -25,8 +24,7 @@ private let CAMERA_FRAME_SIZE: Int32 = 1080
 
 // @unchecked Sendable: engine state is only touched on engineQueue, the session on cameraQueue,
 // observed state on main.
-@Observable
-final class PulpoEngine: NSObject, @unchecked Sendable {
+final class PulpoEngine: NSObject, ObservableObject, @unchecked Sendable {
     enum Status: Equatable {
         case idle
         case loading
@@ -34,27 +32,27 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
         case failed(String)
     }
 
-    private(set) var status: Status = .idle
-    private(set) var faceFound = true
+    @Published private(set) var status: Status = .idle
+    @Published private(set) var faceFound = true
 
     /// Where rendered frames are drawn. Show it with `PulpoFrameView(engine:)`.
-    @ObservationIgnored let frameView = MetalFrameView.make()
+    let frameView = MetalFrameView.make()
 
     // The native engine is NOT thread-safe. Every PulpoModule call goes through this
     // serial queue, so product changes never race the per-frame setFrame/analyseFace/apply
     // sequence.
-    @ObservationIgnored private let engineQueue = DispatchQueue(label: "pulpo.engine")
+    private let engineQueue = DispatchQueue(label: "pulpo.engine")
     // Camera frames arrive on their own queue and then wait their turn on engineQueue.
     // If the camera delivered straight onto engineQueue, frames would keep jumping ahead
     // of product changes whenever processing is slower than the camera (heavy makeup,
     // slower iPhones), and makeup changes would stall.
-    @ObservationIgnored private let cameraQueue = DispatchQueue(label: "pulpo.camera")
-    @ObservationIgnored private let session = AVCaptureSession()
+    private let cameraQueue = DispatchQueue(label: "pulpo.camera")
+    private let session = AVCaptureSession()
 
     // Only touched on engineQueue. True while a still photo (model) is shown instead
     // of the live camera.
-    @ObservationIgnored private var isPhotoMode = false
-    @ObservationIgnored private var lastFaceFound: Bool?
+    private var isPhotoMode = false
+    private var lastFaceFound: Bool?
 
     // MARK: - Lifecycle
 
@@ -188,8 +186,8 @@ final class PulpoEngine: NSObject, @unchecked Sendable {
 
         // Deliver upright, mirrored (selfie) frames so the engine gets what the user sees.
         if let connection = output.connection(with: .video) {
-            if connection.isVideoRotationAngleSupported(90) {
-                connection.videoRotationAngle = 90
+            if connection.isVideoOrientationSupported {
+                connection.videoOrientation = .portrait
             }
             if connection.isVideoMirroringSupported {
                 connection.automaticallyAdjustsVideoMirroring = false
