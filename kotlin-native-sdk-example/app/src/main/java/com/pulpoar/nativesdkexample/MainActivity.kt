@@ -108,15 +108,8 @@ private fun TryOnScreen() {
     }
 
     Box(Modifier.fillMaxSize().background(Color.Black)) {
-        // The engine outputs a square frame; fit it so the whole face stays visible.
-        engine.frame?.let {
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize(),
-            )
-        }
+        // The engine outputs a square frame; it is fitted so the whole face stays visible.
+        PulpoFrameView(engine, Modifier.fillMaxSize())
 
         Column(Modifier.fillMaxSize().systemBarsPadding().padding(vertical = 16.dp)) {
             // Camera / model picker

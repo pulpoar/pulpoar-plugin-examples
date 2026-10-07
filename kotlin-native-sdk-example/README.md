@@ -2,7 +2,7 @@
 
 A minimal Jetpack Compose app that runs the native **PulpoModule** makeup engine — no WebView. Try on lipstick, blush or mascara on the live front camera or on a preset model photo.
 
-Gradle downloads the SDK for you on the first build, so there is nothing to download by hand. Everything else is a few hundred lines of Kotlin in four files.
+Gradle downloads the SDK for you on the first build, so there is nothing to download by hand. Everything else is a few hundred lines of Kotlin in five files.
 
 ## Requirements
 
@@ -58,9 +58,9 @@ Open `AndroidManifest.xml` and add these two lines above `<application>`:
 
 ### Step 5: Copy the helper file
 
-This example has a helper file that does all the hard work for you: **`PulpoEngine.kt`**.
+This example has two helper files that do all the hard work for you: **`PulpoEngine.kt`** and **`PulpoFrameView.kt`**.
 
-Copy it into your project. Copy **`Variants.kt`** too if you want it to get makeup from the PulpoAR API for you. Change the `package` line at the top of each file to your app's package.
+Copy both into your project. Copy **`Variants.kt`** too if you want it to get makeup from the PulpoAR API for you. Change the `package` line at the top of each file to your app's package.
 
 You don't need to change anything else inside them.
 
@@ -93,19 +93,10 @@ fun TryOnScreen() {
 
 ### Step 7: Show the face
 
-The engine gives you a new picture many times every second in `engine.frame`. Show it:
+The engine makes a new picture many times every second. `PulpoFrameView` shows it:
 
 ```kotlin
-Box(Modifier.fillMaxSize().background(Color.Black)) {
-    engine.frame?.let {
-        Image(
-            bitmap = it.asImageBitmap(),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,     // fit, not crop, or the face looks too zoomed in
-            modifier = Modifier.fillMaxSize(),
-        )
-    }
-}
+PulpoFrameView(engine, Modifier.fillMaxSize())   // the face, with makeup
 ```
 
 Run the app. You should see yourself.
@@ -147,7 +138,7 @@ Makeup you set stays on when you switch.
 | You want to… | Call |
 |---|---|
 | Start everything | `engine.start(lifecycleOwner)` |
-| See the result | `engine.frame` |
+| See the result | `PulpoFrameView(engine)` |
 | Put makeup on | `engine.setProducts(listOf(config1, config2))` |
 | Take all makeup off | `engine.setProducts(emptyList())` |
 | Use a photo | `engine.showPhoto(bitmap)` |
@@ -161,7 +152,8 @@ Makeup you set stays on when you switch.
 
 | File | What it does |
 |------|--------------|
-| `PulpoEngine.kt` | All SDK calls: loads the face models, runs the camera or a photo through the engine, publishes rendered frames. |
+| `PulpoEngine.kt` | All SDK calls: loads the face models, runs the camera or a photo through the engine. |
+| `PulpoFrameView.kt` | Shows the rendered frames on screen with a `SurfaceView`. |
 | `Variants.kt` | Fetches a variant's engine config from the PulpoAR API. |
 | `Models.kt` | The preset model photos. |
 | `MainActivity.kt` | Shows the rendered frame, the camera/model picker and the product swatches. |
@@ -185,13 +177,16 @@ This is a `suspend` function. It downloads in the background, then initializes t
 ```kotlin
 NativeLib.setFrame(bitmap)                     // upright, mirrored, square
 NativeLib.analyseFace()                        // false = no face found
-NativeLib.apply()
-val result = NativeLib.getResultFrameAsMat()   // Bitmap with makeup applied
+val result = NativeLib.apply()                 // Bitmap with makeup applied
 ```
 
 The camera image must be rotated upright, mirrored like a selfie and cropped to a square first. See `toUprightSelfie()` in `PulpoEngine.kt`.
 
-The result is a **square** frame. Show it with `ContentScale.Fit`. Filling a tall phone screen with it crops away about half the width and looks heavily zoomed in.
+`apply()` already returns the finished frame, so you don't need `getResultFrameAsMat()` as well; calling both converts every frame twice.
+
+Draw the result onto a `SurfaceView` from the engine thread (see `PulpoFrameView.kt`), rather than putting a new `Bitmap` into Compose state 30 times a second, which keeps the main thread busy redrawing.
+
+The result is a **square** frame. Fit it to the screen; filling a tall phone screen with it crops away about half the width and looks heavily zoomed in.
 
 ### Or: a still photo
 
@@ -199,11 +194,10 @@ The result is a **square** frame. Show it with `ContentScale.Fit`. Filling a tal
 NativeLib.reset()
 NativeLib.setFrame(squarePhoto)
 NativeLib.analyseFace()
-NativeLib.apply()
-val result = NativeLib.getResultFrameAsMat()
+val result = NativeLib.apply()
 ```
 
-Unlike the live loop, a photo isn't re-rendered automatically: after changing products, call `apply()` and `getResultFrameAsMat()` again.
+Unlike the live loop, a photo isn't re-rendered automatically: after changing products, call `apply()` again.
 
 ### 3. Apply products
 
@@ -232,6 +226,7 @@ The live loop picks up the new products on the next frame.
 ## Notes
 
 - **The engine is not thread-safe.** Every `NativeLib` call in this example runs on one single-thread executor, which is also the camera's analyzer thread, so product changes never race the frame loop. The two `suspend` functions (`initFaceModuleByUrl`, `setTextureEncryptedByUrl`) download in the background and then come back to that same thread, so the camera keeps running while they download.
+- **Sharing the engine thread with the camera is safe on Android.** CameraX only hands over the next frame after the previous one is closed, and a single-thread executor runs tasks strictly in order, so a product change waits at most one frame. (On iOS this is not true: the iOS example gives the camera its own queue for that reason.)
 - Call `NativeLib.reset()` when switching between camera and still photos. It clears the engine's face tracking and frame geometry. It is not how you remove products; use `setProducts("[]", …)` for that.
 - Product configs and textures download asynchronously, so a quick second tap can finish before the first. Apply only the latest selection. This example uses Compose's `LaunchedEffect(key)`, which cancels the previous coroutine when the selection changes.
 - The `.aar` contains native code for 4 CPU types, so the debug APK is large (~180 MB). To ship a smaller app, use an App Bundle, or add `ndk { abiFilters += listOf("arm64-v8a") }` to `defaultConfig`.

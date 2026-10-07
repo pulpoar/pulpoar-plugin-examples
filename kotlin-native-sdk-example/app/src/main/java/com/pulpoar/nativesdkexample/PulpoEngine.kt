@@ -36,7 +36,7 @@ private const val FRAME_SIZE = 720
 /**
  * Thin wrapper around the native PulpoModule SDK (`NativeLib`): loads the face models,
  * runs either the live front camera or a still model photo through the engine and
- * exposes the rendered frames as Compose state.
+ * draws the rendered frames into `frameSurface` (see PulpoFrameView.kt).
  */
 class PulpoEngine(private val context: Context) {
     sealed interface Status {
@@ -46,12 +46,13 @@ class PulpoEngine(private val context: Context) {
         data class Failed(val message: String) : Status
     }
 
-    var frame by mutableStateOf<Bitmap?>(null)
-        private set
     var status by mutableStateOf<Status>(Status.Idle)
         private set
     var faceFound by mutableStateOf(true)
         private set
+
+    /** Where rendered frames are drawn. Show it with `PulpoFrameView(engine)`. */
+    val frameSurface = FrameSurface()
 
     // The native engine is NOT thread-safe. Every NativeLib call runs on this one thread,
     // which is also the camera's analyzer thread, so product changes never race the
@@ -63,6 +64,7 @@ class PulpoEngine(private val context: Context) {
     // Only touched on the engine thread. True while a still photo (model) is shown
     // instead of the live camera.
     private var isPhotoMode = false
+    private var lastFaceFound: Boolean? = null
 
     // Main thread only.
     private var cameraProvider: ProcessCameraProvider? = null
@@ -187,14 +189,17 @@ class PulpoEngine(private val context: Context) {
 
     // region Rendering
 
-    /** Runs on the engine thread. Applies the products to the current frame and publishes the result. */
+    /** Runs on the engine thread. Applies the products to the current frame and shows the result. */
     private fun render(faceFound: Boolean? = null) {
-        NativeLib.apply()
-        val result = NativeLib.getResultFrameAsMat()
-        mainExecutor.execute {
-            frame = result
-            if (faceFound != null && faceFound != this.faceFound) this.faceFound = faceFound
+        // Only bother Compose when the face-found state actually changes.
+        if (faceFound != null && faceFound != lastFaceFound) {
+            lastFaceFound = faceFound
+            mainExecutor.execute { this.faceFound = faceFound }
         }
+
+        // apply() already returns the finished frame; no need for getResultFrameAsMat().
+        val result: Bitmap = NativeLib.apply() ?: return
+        frameSurface.display(result)
     }
 
     // endregion
