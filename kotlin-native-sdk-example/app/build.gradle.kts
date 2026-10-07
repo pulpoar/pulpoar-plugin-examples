@@ -16,6 +16,10 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+
+        // Optional: build for one CPU type only, for a much smaller APK, e.g.
+        // ./gradlew assembleDebug -PabiFilters=arm64-v8a
+        (findProperty("abiFilters") as String?)?.let { ndk { abiFilters += it.split(",") } }
     }
 
     compileOptions {
