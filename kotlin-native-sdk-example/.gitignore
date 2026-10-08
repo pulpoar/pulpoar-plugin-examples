@@ -1,0 +1,10 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+.kotlin/
+
+# The PulpoModule SDK is downloaded by Gradle on the first build
+app/libs/PulpoModule-release.aar
