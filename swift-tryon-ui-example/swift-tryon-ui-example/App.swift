@@ -11,8 +11,9 @@ struct SwiftTryOnUIExampleApp: App {
     @StateObject private var cart = Cart()
 
     init() {
-        // Once, before any try-on is shown. Ask your users for analytics consent and pass their answer here.
-        PulpoTryOn.configure(PulpoTryOnConfiguration(analyticsConsent: .granted))
+        // Once, before any try-on is shown. Nothing is reported while consent is pending: set
+        // `PulpoTryOn.analyticsConsent` when the user answers your consent prompt (here, the switch in the Cart tab).
+        PulpoTryOn.configure(PulpoTryOnConfiguration(analyticsConsent: .pending))
     }
 
     var body: some Scene {

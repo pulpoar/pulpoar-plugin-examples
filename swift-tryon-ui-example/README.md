@@ -43,10 +43,16 @@ When your app starts, before any try-on is shown:
 ```swift
 import PulpoTryOnKit
 
-PulpoTryOn.configure(PulpoTryOnConfiguration(analyticsConsent: .granted))
+PulpoTryOn.configure(PulpoTryOnConfiguration(analyticsConsent: .pending))
 ```
 
-Pass the user's real analytics answer: `.granted`, `.denied`, or `.pending` until they've answered.
+Nothing is reported while consent is `.pending`. When the user answers your app's consent prompt, pass their answer:
+
+```swift
+PulpoTryOn.analyticsConsent = userAccepted ? .granted : .denied
+```
+
+If your app already knows the answer at launch, pass it to `configure` instead. Never pass `.granted` without the user's consent. In this example, the switch in the Cart tab plays the consent prompt.
 
 ### Step 5: Show the try-on
 
@@ -92,6 +98,7 @@ present(tryOn, animated: true)
 | You want to… | Use |
 |---|---|
 | Set up the SDK | `PulpoTryOn.configure(…)` once at launch |
+| Pass analytics consent | `PulpoTryOn.analyticsConsent = .granted` (or `.denied`) |
 | Show the try-on | `PulpoTryOnView(projectSlug:)` (UIKit: `PulpoTryOnViewController`) |
 | Get Add to Cart | `onAddToCart` |
 | Get the Details button | `onGoToProduct` |

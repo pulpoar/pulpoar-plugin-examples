@@ -3,6 +3,7 @@
 //  swift-tryon-ui-example
 //
 
+import PulpoTryOnKit
 import PulpoTryOnUI
 import SwiftUI
 
@@ -79,18 +80,27 @@ struct ProductPage: View {
     }
 }
 
-/// What Add to Cart collected.
+/// What Add to Cart collected, and a stand-in for your app's analytics consent prompt.
 struct CartPage: View {
     @EnvironmentObject private var cart: Cart
+    @State private var allowsAnalytics = PulpoTryOn.analyticsConsent == .granted
 
     var body: some View {
         NavigationView {
             List {
-                if cart.items.isEmpty {
-                    Text("Add a shade from the try-on.").foregroundColor(.secondary)
+                Section {
+                    if cart.items.isEmpty {
+                        Text("Add a shade from the try-on.").foregroundColor(.secondary)
+                    }
+                    ForEach(Array(cart.items.enumerated()), id: \.offset) { _, variant in
+                        Text(variant.name)
+                    }
                 }
-                ForEach(Array(cart.items.enumerated()), id: \.offset) { _, variant in
-                    Text(variant.name)
+                Section(footer: Text("Pass the user's answer to the SDK; until then nothing is reported.")) {
+                    Toggle("Allow analytics", isOn: $allowsAnalytics)
+                        .onChange(of: allowsAnalytics) { allowed in
+                            PulpoTryOn.analyticsConsent = allowed ? .granted : .denied
+                        }
                 }
             }
             .navigationTitle("Cart")
