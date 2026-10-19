@@ -8,8 +8,9 @@ It comes as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://github.com/
 
 ## Requirements
 
-- Xcode 16+
+- Xcode 26+ (the SDK is built with Swift 6.3)
 - **A physical iPhone running iOS 15.6 or later.** The simulator has no camera, and the SDK has no Apple Silicon simulator slice yet.
+- An agreement with PulpoAR: the SDK is proprietary.
 
 ## Run it
 
