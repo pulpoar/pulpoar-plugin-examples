@@ -8,12 +8,16 @@ It comes as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://github.com/
 
 ## Requirements
 
-- Xcode 16+
+- Xcode 26+ (the SDK is built with Swift 6.3)
 - **A physical iPhone running iOS 15.6 or later.** The simulator has no camera, and the SDK has no Apple Silicon simulator slice yet.
+- An agreement with PulpoAR: the SDK is proprietary.
 
 ## Run it
 
-Open `swift-tryon-ui-example.xcodeproj`, choose your Team under *Signing & Capabilities*, and run on a device. Xcode downloads the SDK automatically the first time.
+1. Turn on **Developer Mode** on your iPhone (Settings → Privacy & Security → Developer Mode).
+2. Open `swift-tryon-ui-example.xcodeproj`.
+3. Under *Signing & Capabilities*, choose your Team and change the Bundle Identifier to one of your own, such as `com.yourcompany.tryon-example`. The default belongs to PulpoAR's account and can't be signed by yours.
+4. Choose your iPhone and run. Xcode downloads the SDK automatically the first time.
 
 ## Add it to your own app, step by step
 
