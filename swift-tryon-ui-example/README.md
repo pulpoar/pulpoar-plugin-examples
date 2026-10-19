@@ -14,7 +14,10 @@ It comes as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://github.com/
 
 ## Run it
 
-Open `swift-tryon-ui-example.xcodeproj`, choose your Team under *Signing & Capabilities*, and run on a device. Xcode downloads the SDK automatically the first time.
+1. Turn on **Developer Mode** on your iPhone (Settings → Privacy & Security → Developer Mode).
+2. Open `swift-tryon-ui-example.xcodeproj`.
+3. Under *Signing & Capabilities*, choose your Team and change the Bundle Identifier to one of your own, such as `com.yourcompany.tryon-example`. The default belongs to PulpoAR's account and can't be signed by yours.
+4. Choose your iPhone and run. Xcode downloads the SDK automatically the first time.
 
 ## Add it to your own app, step by step
 
