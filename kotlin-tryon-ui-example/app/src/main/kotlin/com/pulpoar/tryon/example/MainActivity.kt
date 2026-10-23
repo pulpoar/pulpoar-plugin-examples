@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -46,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -60,7 +63,8 @@ const val PROJECT_SLUG = "makeup"
 
 // The iOS example's look, so both examples show the same shop: system blue, white pages, grouped lists.
 private val Accent = Color(0xFF007AFF)
-private val Secondary = Color(0xFF8E8E93)
+// iOS's secondary grey, darkened to 4.5:1 on every background for small text.
+private val Secondary = Color(0xFF636366)
 private val GroupedBackground = Color(0xFFF2F2F7)
 private val Separator = Color(0xFFC6C6C8)
 
@@ -77,7 +81,8 @@ class MainActivity : ComponentActivity() {
         // Dark status bar icons on the light pages. The try-on sets its own while it's shown.
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
-            navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.TRANSPARENT),
+            // Android 7-7.1 can't draw dark navigation buttons: those get a dark bar instead.
+            navigationBarStyle = SystemBarStyle.light(android.graphics.Color.TRANSPARENT, android.graphics.Color.BLACK),
         )
         super.onCreate(savedInstanceState)
         setContent { MaterialTheme { ExampleApp(cart) } }
@@ -152,13 +157,16 @@ private enum class Opened {
 private fun TabBar(selected: Tab, cartCount: Int, onSelect: (Tab) -> Unit) {
     Column(Modifier.fillMaxWidth().background(Color(0xFFF9F9F9)).navigationBarsPadding()) {
         HorizontalDivider(thickness = 0.5.dp, color = Separator)
-        Row(Modifier.fillMaxWidth().height(50.dp)) {
+        Row(Modifier.fillMaxWidth().height(50.dp).selectableGroup()) {
             Tab.entries.forEach { entry ->
                 val color = if (entry == selected) Accent else Secondary
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center,
-                    modifier = Modifier.weight(1f).fillMaxSize().clickable { onSelect(entry) },
+                    modifier =
+                        Modifier.weight(1f)
+                            .fillMaxSize()
+                            .selectable(selected = entry == selected, role = Role.Tab, onClick = { onSelect(entry) }),
                 ) {
                     Icon(entry.icon, contentDescription = null, tint = color, modifier = Modifier.size(26.dp))
                     Text(
@@ -203,7 +211,8 @@ private fun NavigationBar(backTitle: String, onBack: () -> Unit) {
 /** A product page with two ways into the try-on. */
 @Composable
 private fun ProductPage(onOpen: (Opened) -> Unit) {
-    Column(Modifier.fillMaxSize()) {
+    // Scrolls, so the two entries stay reachable in landscape or a short split-screen window.
+    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
         LargeTitle("Shop")
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
