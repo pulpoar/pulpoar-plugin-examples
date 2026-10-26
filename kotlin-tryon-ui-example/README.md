@@ -6,7 +6,7 @@ The try-on is **PulpoTryOnUI**: every screen of PulpoAR's web try-on (start, cam
 
 It comes from the PulpoAR Maven repository, so there is nothing to download by hand. Releases, checksums and the verification script are in [`pulpoar/pulpoar-android-sdk`](https://github.com/pulpoar/pulpoar-android-sdk).
 
-> **Pre-release SDK.** This example uses `0.1.0-rc.1`. Its engine is not yet 16 KB page-size aligned, so apps built on it can't be uploaded to Google Play as new apps targeting Android 15 or newer. It's fine for trying the integration. The version here moves to the first final release when there is one.
+> **Pre-release SDK.** This example uses `0.1.0-rc.2`. Its engine's 64-bit libraries are 16 KB page-size aligned (checked on the files, not yet on a 16 KB device). It's a pre-release for trying the integration; the version here moves to the first final release when there is one.
 
 ## Requirements
 
@@ -46,7 +46,7 @@ In your app module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.pulpoar:tryon-ui:0.1.0-rc.1")
+    implementation("com.pulpoar:tryon-ui:0.1.0-rc.2")
 }
 ```
 

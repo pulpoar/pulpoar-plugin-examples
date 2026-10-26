@@ -27,7 +27,7 @@ kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }
 
 dependencies {
     // The only PulpoAR dependency: it brings the Try-On Kit and the engine with it. Pin an exact version.
-    implementation("com.pulpoar:tryon-ui:0.1.0-rc.1")
+    implementation("com.pulpoar:tryon-ui:0.1.0-rc.2")
 
     implementation(platform("androidx.compose:compose-bom:2025.08.00"))
     implementation("androidx.compose.material3:material3")
