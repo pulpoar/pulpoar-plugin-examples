@@ -38,7 +38,7 @@ android {
 val pulpoSdk = file("libs/PulpoModule-release.aar")
 if (!pulpoSdk.exists()) {
     pulpoSdk.parentFile.mkdirs()
-    URL("https://assets.pulpoar.com/vision/pulpo-module/builds/NativePulpoModule_v0.0.2/android/PulpoModule-release.aar")
+    URL("https://assets.pulpoar.com/vision/pulpo-module/builds/NativePulpoModule_v0.0.3/android/PulpoModule-release.aar")
         .openStream().use { input -> pulpoSdk.outputStream().use { input.copyTo(it) } }
 }
 

@@ -21,7 +21,7 @@ Think of the SDK as a **makeup artist in a box**. You give it a picture of a fac
 
 Download the SDK file, `PulpoModule-release.aar`:
 
-https://assets.pulpoar.com/vision/pulpo-module/builds/NativePulpoModule_v0.0.2/android/PulpoModule-release.aar
+https://assets.pulpoar.com/vision/pulpo-module/builds/NativePulpoModule_v0.0.3/android/PulpoModule-release.aar
 
 ### Step 2: Put the box in your app
 
