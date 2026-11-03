@@ -13,11 +13,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.tappableElement
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -48,6 +54,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -129,7 +136,8 @@ private fun ExampleApp(cart: Cart) {
         }
         null ->
             Column(Modifier.fillMaxSize().background(Color.White)) {
-                Box(Modifier.weight(1f)) {
+                // The tab bar sits on the system navigation bar, so the tabs above it don't pad for it again.
+                Box(Modifier.weight(1f).consumeWindowInsets(WindowInsets.navigationBars)) {
                     when (tab) {
                         Tab.Shop -> ProductPage(onOpen = { opened = it })
                         // A tab: the try-on stays where it was while you visit another tab.
@@ -155,9 +163,22 @@ private enum class Opened {
 /** The iOS tab bar: icon over a small label, the selected tab in the accent color. */
 @Composable
 private fun TabBar(selected: Tab, cartCount: Int, onSelect: (Tab) -> Unit) {
-    Column(Modifier.fillMaxWidth().background(Color(0xFFF9F9F9)).navigationBarsPadding()) {
+    // Stay above navigation buttons, but center the tabs over the gesture bar's space instead of leaving it empty
+    // below them.
+    val density = LocalDensity.current
+    val gestureBar =
+        with(density) {
+            (WindowInsets.navigationBars.getBottom(density) - WindowInsets.tappableElement.getBottom(density))
+                .coerceAtLeast(0)
+                .toDp()
+        }
+    Column(
+        Modifier.fillMaxWidth()
+            .background(Color(0xFFF9F9F9))
+            .windowInsetsPadding(WindowInsets.tappableElement.only(WindowInsetsSides.Bottom))
+    ) {
         HorizontalDivider(thickness = 0.5.dp, color = Separator)
-        Row(Modifier.fillMaxWidth().height(50.dp).selectableGroup()) {
+        Row(Modifier.fillMaxWidth().height(50.dp + gestureBar).selectableGroup()) {
             Tab.entries.forEach { entry ->
                 val color = if (entry == selected) Accent else Secondary
                 Column(
