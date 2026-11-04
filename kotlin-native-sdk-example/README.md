@@ -177,12 +177,13 @@ This is a `suspend` function. It downloads in the background, then initializes t
 ```kotlin
 NativeLib.setFrame(bitmap)                     // upright, mirrored, square
 NativeLib.analyseFace()                        // false = no face found
-val result = NativeLib.apply()                 // Bitmap with makeup applied
+NativeLib.apply()
+val result = NativeLib.getResultFrameAsMat()   // Bitmap with makeup applied
 ```
 
 The camera image must be rotated upright, mirrored like a selfie and cropped to a square first. See `toUprightSelfie()` in `PulpoEngine.kt`.
 
-`apply()` already returns the finished frame, so you don't need `getResultFrameAsMat()` as well; calling both converts every frame twice.
+Use `getResultFrameAsMat()` for the picture, not `apply()`'s own return value. The engine pads each frame with a border of mirrored copies while it works; `getResultFrameAsMat()` crops that off, `apply()`'s return value does not.
 
 Draw the result onto a `SurfaceView` from the engine thread (see `PulpoFrameView.kt`), rather than putting a new `Bitmap` into Compose state 30 times a second, which keeps the main thread busy redrawing.
 
@@ -194,10 +195,11 @@ The result is a **square** frame. Fit it to the screen; filling a tall phone scr
 NativeLib.reset()
 NativeLib.setFrame(squarePhoto)
 NativeLib.analyseFace()
-val result = NativeLib.apply()
+NativeLib.apply()
+val result = NativeLib.getResultFrameAsMat()
 ```
 
-Unlike the live loop, a photo isn't re-rendered automatically: after changing products, call `apply()` again.
+Unlike the live loop, a photo isn't re-rendered automatically: after changing products, call `apply()` and `getResultFrameAsMat()` again.
 
 ### 3. Apply products
 

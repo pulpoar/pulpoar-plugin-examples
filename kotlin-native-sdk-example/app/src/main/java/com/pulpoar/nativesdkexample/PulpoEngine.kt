@@ -197,8 +197,10 @@ class PulpoEngine(private val context: Context) {
             mainExecutor.execute { this.faceFound = faceFound }
         }
 
-        // apply() already returns the finished frame; no need for getResultFrameAsMat().
-        val result: Bitmap = NativeLib.apply() ?: return
+        NativeLib.apply()
+        // Not apply()'s own return value: that frame still has the engine's working border
+        // (mirrored copies of the image on every side). getResultFrameAsMat() crops it off.
+        val result: Bitmap = NativeLib.getResultFrameAsMat() ?: return
         frameSurface.display(result)
     }
 
