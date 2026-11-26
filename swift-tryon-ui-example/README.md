@@ -24,7 +24,7 @@ It comes as a Swift package from [`pulpoar/pulpoar-ios-sdk`](https://github.com/
 ### Step 1: Add the package
 
 1. In Xcode, choose **File → Add Package Dependencies…**
-2. Paste `https://github.com/pulpoar/pulpoar-ios-sdk`, set the rule to **Up to Next Major Version** from `0.2.1`, and click **Add Package**.
+2. Paste `https://github.com/pulpoar/pulpoar-ios-sdk`, set the rule to **Up to Next Minor Version** from `0.4.0` (below 1.0, a minor version can change the API), and click **Add Package**.
 3. When asked, add **PulpoTryOnUI** to your app target. That's the only one you need: it brings the Try-On Kit and the engine with it.
 
 ### Step 2: Set the iPhone version
@@ -81,7 +81,8 @@ PulpoTryOnView(projectSlug: "your-project", configuration: .init(
     onClose: { isTryOnPresented = false },                  // the try-on's close button; dismiss it here
     customizeTheme: { theme in
         theme.catalog.withAddToCart = true                  // anything in your Studio theme can be changed here
-    }
+    },
+    onEvent: { event in analytics.log(event.key) }          // every try-on event, as the web plugin sends it
 ))
 ```
 

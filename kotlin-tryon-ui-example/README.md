@@ -44,7 +44,7 @@ In your app module's `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.pulpoar:tryon-ui:0.1.0")
+    implementation("com.pulpoar:tryon-ui:0.2.0")
 }
 ```
 
@@ -107,6 +107,7 @@ PulpoTryOnView(
         onAddToCart = { variants -> cart.add(variants) },        // without it, Add to Cart opens the product's web page
         onGoToProduct = { variant -> openProductPage(variant) }, // the Details button
         onClose = { isTryOnOpen = false },                       // the try-on's close button; dismiss it here
+        onEvent = { event -> analytics.log(event.key) },         // every try-on event, as the web plugin sends it
         customizeTheme = { theme ->
             theme.catalog.withGoToProduct = false                // anything in your Studio theme can be changed here
         },
